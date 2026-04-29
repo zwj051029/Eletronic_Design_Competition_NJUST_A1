@@ -38,8 +38,8 @@ static float GetFreq(struct BspTIMPWM_t pwm_inst)
         default: divideRatio = 1; 
     }
     
-    // 计算PWM频率 = 定时器时钟频率 / (ARR + 1)
-    float pwm_freq = (float)timer_clock_freq / ( (prescale + 1) * (arr+1) * divideRatio ) ;
+    // 计算PWM频率 = 时钟主频 / ((ARR + 1) * (prescale + 1) * DIV)
+    float pwm_freq = (float)timer_clock_freq / ( (arr+1) * (prescale + 1) * divideRatio ) ;
 
     return pwm_freq;
 }
