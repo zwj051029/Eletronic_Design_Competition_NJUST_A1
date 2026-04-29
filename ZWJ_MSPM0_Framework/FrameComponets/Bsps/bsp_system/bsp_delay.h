@@ -8,7 +8,6 @@ extern "C" {
 #include "stdbool.h"
 #include "stdint.h"
 
-
 /******************************************************************************
  * 配置选项
  *****************************************************************************/
@@ -29,26 +28,26 @@ extern "C" {
  * @note - ≤100μs：强制忙等（保证精度）
  *       - >100μs：根据配置选择
  */
-void Bsp_DelayUs(uint32_t us);
+void BspDelay_us(uint32_t us);
 
 /**
  * @brief 毫秒级延时（自动适配FreeRTOS）
  * @param ms: 延时时间，单位毫秒
  */
-void Bsp_DelayMs(uint32_t ms);
+void BspDelay_ms(uint32_t ms);
 
 /**
  * @brief 非阻塞微秒级延时（用硬件定时器中断，可选）
  * @param us: 延时时间，单位微秒
  * @note 需要在SysConfig里开启TIMA0的比较中断
  */
-void Bsp_DelayUs_NonBlocking(uint32_t us);
+void BspDelay_us_NonBlocking(uint32_t us);
 
 /**
  * @brief 检查非阻塞延时是否完成
  * @return true: 延时完成，false: 延时中
  */
-bool Bsp_DelayUs_IsDone(void);
+bool BspDelay_us_IsDone(void);
 
 #ifdef __cplusplus
 }

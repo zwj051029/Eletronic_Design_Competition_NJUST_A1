@@ -52,7 +52,7 @@ static void DelayUs_BusyWait(uint32_t us) {
 /**
  * @brief 微秒级延时（对外接口）
  */
-void Bsp_DelayUs(uint32_t us) {
+void BspDelay_us(uint32_t us) {
     if (us == 0)
         return;
 
@@ -78,7 +78,7 @@ void Bsp_DelayUs(uint32_t us) {
 /**
  * @brief 毫秒级延时（自动适配FreeRTOS）
  */
-void Bsp_DelayMs(uint32_t ms) {
+void BspDelay_ms(uint32_t ms) {
     if (ms == 0)
         return;
 
@@ -106,7 +106,7 @@ void Bsp_DelayMs(uint32_t ms) {
         // FreeRTOS已启动
         if (ms <= 10) {
             // ≤10ms：用忙等（保证精度）
-            Bsp_DelayUs(ms * 1000);
+            BspDelay_us(ms * 1000);
         } else {
             // >10ms：用FreeRTOS非阻塞延时
             vTaskDelay(pdMS_TO_TICKS(ms));
@@ -117,7 +117,7 @@ void Bsp_DelayMs(uint32_t ms) {
 /**
  * @brief 非阻塞微秒级延时（用硬件定时器比较）
  */
-void Bsp_DelayUs_NonBlocking(uint32_t us) {
+void BspDelay_us_NonBlocking(uint32_t us) {
     delay_nonblocking_done = false;
     delay_start_cnt = GetTimCounter();
     delay_target_cycles = US_TO_CYCLES(us);
@@ -126,7 +126,7 @@ void Bsp_DelayUs_NonBlocking(uint32_t us) {
 /**
  * @brief 检查非阻塞延时是否完成
  */
-bool Bsp_DelayUs_IsDone(void) {
+bool BspDelay_us_IsDone(void) {
     if (delay_nonblocking_done) {
         return true;
     }

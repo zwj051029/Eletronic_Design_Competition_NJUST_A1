@@ -53,6 +53,7 @@
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/oled"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/mpu6050"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/motor_at8236"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/ultrasonic"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/bluetooth"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Bsps/gpio"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Bsps/bsp_system"/>
