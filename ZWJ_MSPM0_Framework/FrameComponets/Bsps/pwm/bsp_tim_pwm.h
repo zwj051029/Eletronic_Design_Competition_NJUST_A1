@@ -6,8 +6,6 @@ extern "C"
 {
 #endif
 
-//#include "stm32f4xx_hal.h"
-//#include "tim.h"
 #include <stdint.h>
 #include "ti/devices/msp/msp.h"
 

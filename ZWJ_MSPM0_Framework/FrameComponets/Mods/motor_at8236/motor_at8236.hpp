@@ -30,9 +30,6 @@ class MotorAT8236{
         bool enabled = false;                     // 电机是否使能
 
     public:
-        
-        // 用于中断回调
-        static MotorAT8236* instance;
         /// @brief 电机初始化函数
         void Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, 
                   GPIO_Regs *encoderB_port, uint32_t encoderB_pin,

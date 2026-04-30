@@ -1,6 +1,5 @@
 #include "motor_at8236.hpp"
 
-MotorAT8236* MotorAT8236::instance = nullptr;
 
 /**
  * @brief  
@@ -36,7 +35,6 @@ void MotorAT8236::Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin,
     this->initialized = true; 
     
     // 用于中断函数中调用类的静态方法，以读取编码器脉冲信号
-    instance = this; 
 }
 
 
