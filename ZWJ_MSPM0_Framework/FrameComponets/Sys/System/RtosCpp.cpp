@@ -29,7 +29,7 @@ void MainInitCpp() {
 void ControlCpp() {
 
     while (1) {
-        MotorAT8236::ControlAllMotors();
+        //MotorAT8236::ControlAllMotors();
         /***     最大循环频率：1000Hz     ***/
         vTaskDelay(pdMS_TO_TICKS(1));
     }

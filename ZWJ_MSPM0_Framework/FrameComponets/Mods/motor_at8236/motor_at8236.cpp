@@ -1,7 +1,9 @@
 #include "motor_at8236.hpp"
 
+// 限制注册实例变量
 #define MotorAT8236_MAX_CANINSTS 2
 
+// 限制注册实例变量
 static MotorAT8236 *motor_at8236_insts[MotorAT8236_MAX_CANINSTS] = {NULL};
 static uint8_t motor_at8236_insts_count = 0;
 
@@ -24,7 +26,7 @@ MotorAT8236 motor_right;
  */
 void MotorAT8236::Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, GPIO_Regs *encoderB_port, uint32_t encoderB_pin,
                        uint16_t encoder_lines, uint16_t gear_ratio, GPTIMER_Regs *PWMA_htim, uint32_t PWMA_channel,
-                       GPTIMER_Regs *PWMB_htim, uint32_t PWMB_channel, float max_speed) {
+                       GPTIMER_Regs *PWMB_htim, uint32_t PWMB_channel, float max_speed, float min_speed) {
     // 初始化编码器的GPIO与电机的PWM
     BspGpio_InstRegister(&this->encoderA_inst, encoderA_port, encoderA_pin);
     BspGpio_InstRegister(&this->encoderB_inst, encoderB_port, encoderB_pin);
@@ -35,9 +37,10 @@ void MotorAT8236::Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, GPIO_Reg
     this->encoder_lines = encoder_lines;
     this->gear_ratio = gear_ratio;
     this->max_speed = max_speed;
+    this->min_speed = min_speed;
     this->initialized = true;
 
-    // 用于中断函数中调用类的静态方法，以读取编码器脉冲信号
+    // 限制注册实例变量
     motor_at8236_insts[motor_at8236_insts_count++] = this;
 }
 
@@ -56,7 +59,7 @@ PWM	1	反转	反向 PWM 驱动，采用慢衰减模式
  * @brief 使能电机
  */
 void MotorAT8236::Enable() {
-    if (!this->initialized)
+    if (!this->initialized || this->enabled)
         return;
 
     BspTIMPWM_Enable(&this->PWMA);
@@ -69,7 +72,7 @@ void MotorAT8236::Enable() {
  * @brief 失能电机
  */
 void MotorAT8236::Disable() {
-    if (!this->initialized)
+    if (!this->initialized || !this->enabled)
         return;
 
     BspTIMPWM_Disable(&this->PWMA);
@@ -83,6 +86,8 @@ void MotorAT8236::Disable() {
  * @param target_speed：电机的目标速度
  */
 void MotorAT8236::SetSpeed(float target_speed) {
+    if (!this->initialized || !this->enabled)
+        return;
     this->target_speed = target_speed;
 }
 
@@ -91,29 +96,89 @@ void MotorAT8236::SetSpeed(float target_speed) {
  * @return float：电机的当前速度
  */
 float MotorAT8236::GetCurrentSpeed() {
+    if (!this->initialized || !this->enabled)
+        return 0.0f;
+
     return this->current_speed;
 }
 
-void MotorAT8236::ControlAllMotors()
-{
-    // 
-    
-    for (uint8_t i = 0; i < motor_at8236_insts_count; i++)
-    {
+void MotorAT8236::ControlAllMotors() {
+    if (!this->initialized || !this->enabled)
+        return;
+
+    for (uint8_t i = 0; i < motor_at8236_insts_count; i++) {
         MotorAT8236 *motor_at8236 = motor_at8236_insts[i];
-        if (motor_at8236 != NULL)
-        {
+        if (motor_at8236 != NULL) {
             motor_at8236->Control();
         }
     }
 }
 
-void MotorAT8236::Control()
-{
+void MotorAT8236::Control() {
     switch (mode) {
-        case Speed_Control_Mode:
+    case Speed_Control_Mode:
+    case Pos_Control_Mode:
+        break;
+    case No_Control_Mode:
+        break;
+    default:
+        break;
     }
 }
 
-void GROUP1_IRQHandler(void) {
+/**
+ * @brief 计算电机当前转速（使用固定测速周期，即M法）
+ * @return float 当前转速，单位 RPM（正值正转，负值反转）
+ * @note  该函数应在周期中断（例如 10ms 定时器中断）中被调用，
+ *        以保证 dt 与实际调用间隔一致。
+ */
+void MotorAT8236::SpeedCalculation() {
+    // 1. 计算脉冲增量
+    int64_t delta = pulse_count - last_pulse_count;
+    last_pulse_count = pulse_count;
+
+    // 2. 脉冲增量 → 输出轴转数（4倍频 + 减速比）
+    float rev = (float) delta / (encoder_lines * 4.0f * gear_ratio);
+
+    // 3. 转数 → 转速 (RPM)
+    this->current_speed = rev / speed_calculation_period * 60.0f;
+}
+
+void GROUP0_IRQHandler(void) {
+    // 左轮
+    if (DL_GPIO_getEnabledInterruptStatus(motor_left.encoderA_inst.port, motor_left.encoderA_inst.pin)) {
+        uint8_t B = DL_GPIO_readPins(motor_left.encoderB_inst.port, motor_left.encoderB_inst.pin);
+
+        if (B)
+            motor_left.pulse_count--;
+        else
+            motor_left.pulse_count++;
+
+        DL_GPIO_clearInterruptStatus(motor_left.encoderA_inst.port, motor_left.encoderA_inst.pin);
+    }
+
+    // 右轮
+    if (DL_GPIO_getEnabledInterruptStatus(motor_right.encoderA_inst.port, motor_right.encoderA_inst.pin)) {
+        uint8_t B = DL_GPIO_readPins(motor_right.encoderB_inst.port, motor_right.encoderB_inst.pin);
+
+        if (B)
+            motor_right.pulse_count--;
+        else
+            motor_right.pulse_count++;
+
+        DL_GPIO_clearInterruptStatus(motor_right.encoderA_inst.port, motor_right.encoderA_inst.pin);
+    }
+}
+
+/**
+ * @brief 定时器归零中断，设置10ms自动触发来计算两个轮子的速度
+ * @note  请填写TIMER_0_INST，即对应的定时器
+ */
+void TIMER_0_INST_IRQHandler(void)
+{
+    motor_left.SpeedCalculation();
+    motor_right.SpeedCalculation();
+
+    //定时器需要指定
+    DL_Timer_clearInterruptStatus(TIMER_0_INST, DL_TIMER_IIDX_ZERO);
 }
