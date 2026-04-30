@@ -75,7 +75,29 @@ void MotorAT8236::Disable()
     this->enabled = false;
 }   
 
+/**
+ * @brief 设置电机的目标速度
+ * @param target_speed：电机的目标速度
+ */
 void SetTargetSpeed(float target_speed)
 {
-    
+    this->target_speed = target_speed;
+}
+
+/**
+ * @brief 获得电机的目标速度
+ * @return float：电机的目标速度
+ */
+float GetTargetSpeed()
+{
+    return this->target_speed;
+}
+
+/**
+ * @brief 获得电机的当前速度
+ * @return float：电机的当前速度 
+ */
+float GetCurrentSpeed()
+{
+    return this->current_speed = current_speed;
 }
