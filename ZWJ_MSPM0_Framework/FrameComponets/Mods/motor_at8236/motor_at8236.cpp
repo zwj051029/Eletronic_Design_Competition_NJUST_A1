@@ -34,4 +34,48 @@ void MotorAT8236::Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin,
     
     this->initialized = true;  
 }
-                  
+
+
+/****
+AT8236真值表
+IN1	IN2	电机状态	功能说明
+PWM	0	正转	正向 PWM 驱动，采用快衰减模式
+1	PWM	正转	正向 PWM 驱动，采用慢衰减模式
+0	PWM	反转	反向 PWM 驱动，采用快衰减模式
+PWM	1	反转	反向 PWM 驱动，采用慢衰减模式
+0   0   停止
+注：主要使用“快衰减模式”
+****/
+
+/**
+ * @brief 使能电机 
+ */
+void MotorAT8236::Enable()
+{
+    if(!this->initialized)
+        return;
+
+    BspTIMPWM_Enable(&this->PWMA);
+    BspTIMPWM_Enable(&this->PWMB);
+
+    this->enabled = true;
+}     
+
+/**
+ * @brief 失能电机 
+ */
+void MotorAT8236::Disable()
+{
+    if(!this->initialized)
+        return;
+
+    BspTIMPWM_Disable(&this->PWMA);
+    BspTIMPWM_Disable(&this->PWMB);
+
+    this->enabled = false;
+}   
+
+void SetTargetSpeed(float target_speed)
+{
+    
+}
