@@ -30,14 +30,17 @@ private:
 
     // 电机的相关参数
     float current_speed = 0.0f; // 当前实际速度
-    float target_speed = 0;     // 电机的目标速度
+    float target_speed = 0.0f;  // 电机的目标速度
     float max_speed;            // 电机的最大速度
     float min_speed;            // 电机的最小速度
 
     bool initialized = false; // 电机是否初始化
     bool enabled = false;     // 电机是否使能
 
-    MotorMode mode = No_Control_Mode;
+    MotorMode mode = No_Control_Mode; // 电机模式
+
+    // PID相关
+    PidGeneral pid_speed; // 速度环PID
 
 public:
     /// @brief 电机初始化函数
@@ -52,18 +55,15 @@ public:
 
     /// @brief 电机目标速度设置函数
     void SetSpeed(float target_speed);
-
-    /// @brief 电机当前速度获取函数
-    float GetCurrentSpeed();
+    /// @brief 计算速度函数
+    void SpeedCalculation();
+    /// @brief PWM更新函数
+    void UpdatePWM(float duty);
 
     /// @brief 电机的单个控制
     void Control();
-
     /// @brief 电机的总体控制
     void ControlAllMotors();
-
-    /// @brief 计算速度
-    void SpeedCalculation();
 };
 
 extern MotorAT8236 motor_left;

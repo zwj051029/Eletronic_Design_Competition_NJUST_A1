@@ -40,20 +40,13 @@ void MotorAT8236::Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, GPIO_Reg
     this->min_speed = min_speed;
     this->initialized = true;
 
+    // PID初始化，后续可以自行调用修改函数进行修改
+    pidSpeed.Init(2.0f, 0.5f, 0.1f, false); // kp=2.0, ki=0.5, kd=0.1, 不反向
+    pidSpeed.SetLimit(0.3f, 1.0f, 0.9f);    // 积分限幅30%, 输出限幅1.0, 微分滤波0.9
+
     // 限制注册实例变量
     motor_at8236_insts[motor_at8236_insts_count++] = this;
 }
-
-/****
-AT8236真值表
-IN1	IN2	电机状态	功能说明
-PWM	0	正转	正向 PWM 驱动，采用快衰减模式
-1	PWM	正转	正向 PWM 驱动，采用慢衰减模式
-0	PWM	反转	反向 PWM 驱动，采用快衰减模式
-PWM	1	反转	反向 PWM 驱动，采用慢衰减模式
-0   0   停止
-注：主要使用“快衰减模式”
-****/
 
 /**
  * @brief 使能电机
@@ -129,21 +122,68 @@ void MotorAT8236::Control() {
 /**
  * @brief 计算电机当前转速（使用固定测速周期，即M法）
  * @return float 当前转速，单位 RPM（正值正转，负值反转）
- * @note  该函数应在周期中断（例如 10ms 定时器中断）中被调用，
- *        以保证 dt 与实际调用间隔一致。
+ * @note  该函数应在定时器中断（例如 10ms 定时器中断）中被调用
+ *        倍频：一
  */
 void MotorAT8236::SpeedCalculation() {
     // 1. 计算脉冲增量
     int64_t delta = pulse_count - last_pulse_count;
     last_pulse_count = pulse_count;
 
-    // 2. 脉冲增量 → 输出轴转数（4倍频 + 减速比）
-    float rev = (float) delta / (encoder_lines * 4.0f * gear_ratio);
+    // 2. 脉冲增量 → 输出轴转数（1倍频 + 减速比）
+    float rev = (float) delta / (encoder_lines * 1.0f * gear_ratio);
 
     // 3. 转数 → 转速 (RPM)
     this->current_speed = rev / speed_calculation_period * 60.0f;
 }
 
+/****
+AT8236真值表
+IN1	IN2	电机状态	功能说明
+PWM	0	正转	正向 PWM 驱动，采用快衰减模式
+1	PWM	正转	正向 PWM 驱动，采用慢衰减模式
+0	PWM	反转	反向 PWM 驱动，采用快衰减模式
+PWM	1	反转	反向 PWM 驱动，采用慢衰减模式
+0   0   停止
+注：主要使用“快衰减模式”
+****/
+
+/**
+ * @brief 根据输入值修改占空比
+ * @param duty 目标占空比
+ */
+void MotorAT8236::UpdatePWM(float duty) {
+    if (!initialized || !enabled)
+        return;
+
+    float absDuty = fabsf(duty);
+    if (absDuty > 1.0f)
+        absDuty = 1.0f;
+
+    if (duty > 0.0f) {
+        BspTIMPWM_SetDuty(&PWMA, absDuty);
+        BspTIMPWM_SetDuty(&PWMB, 0.0f);
+    } else if (duty < 0.0f) {
+        BspTIMPWM_SetDuty(&PWMA, 0.0f);
+        BspTIMPWM_SetDuty(&PWMB, absDuty);
+    } else {
+        BspTIMPWM_SetDuty(&PWMA, 0.0f);
+        BspTIMPWM_SetDuty(&PWMB, 0.0f);
+    }
+}
+
+void SetSpeed(float target_speed){
+    this->mode = MotorMode->Speed_Control_Mode;
+    this->target_speed = target_speed;
+}
+
+
+
+
+
+/**
+ * @brief 使用一倍频的中断函数
+ */
 void GROUP0_IRQHandler(void) {
     // 左轮
     if (DL_GPIO_getEnabledInterruptStatus(motor_left.encoderA_inst.port, motor_left.encoderA_inst.pin)) {
@@ -174,11 +214,10 @@ void GROUP0_IRQHandler(void) {
  * @brief 定时器归零中断，设置10ms自动触发来计算两个轮子的速度
  * @note  请填写TIMER_0_INST，即对应的定时器
  */
-void TIMER_0_INST_IRQHandler(void)
-{
+void TIMER_0_INST_IRQHandler(void) {
     motor_left.SpeedCalculation();
     motor_right.SpeedCalculation();
 
-    //定时器需要指定
+    // 定时器需要指定
     DL_Timer_clearInterruptStatus(TIMER_0_INST, DL_TIMER_IIDX_ZERO);
 }
