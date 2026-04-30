@@ -4,13 +4,20 @@
 #include "bsp_tim_pwm.h"
 #include "pid.hpp"
 #include "bsp_gpio.h"
+#include <ti/driverlib/dl_gpio.h>
+
+#define  GROUP1_IRQHandler GROUP1_IRQHandler      //中断函数根据实际选择对应编码器引脚的中断函数
 
 class MotorAT8236{
     private:
+        ///@brief 获取指定引脚的双边沿触发极性宏
+        uint32_t GetEdgeRiseFallMacro(uint32_t pin);
+        ///@brief 配置编码器 A 相的双边沿触发并打开中断
+        
         /// 编码器相关参数
-        BspGpio_Instance encoderA_inst;           // 霍尔编码器的A相
+        void SetupEncoderInterrupt();
         BspGpio_Instance encoderB_inst;           // 霍尔编码器的B相
-        int64_t pulseCount = 0;                   // 带符号累计脉冲数，正转加，反转减
+        int64_t pulse_count = 0;                  // 带符号累计脉冲数，正转加，反转减
         uint16_t encoder_lines = 1;               // 编码器线数，单相每圈脉冲数
         int64_t last_pulse_count = 0;             // 上一次速度更新时的脉冲计数
         uint16_t gear_ratio = 1;                  // 减速比，电机轴转数 / 输出轴转数
@@ -27,6 +34,10 @@ class MotorAT8236{
         bool enabled = false;                     // 电机是否使能
 
     public:
+        BspGpio_Instance encoderA_inst;           // 霍尔编码器的A相
+        
+        // 用于中断回调
+        static MotorAT8236* instance;
         /// @brief 电机初始化函数
         void Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, 
                   GPIO_Regs *encoderB_port, uint32_t encoderB_pin,
@@ -48,9 +59,13 @@ class MotorAT8236{
         /// @brief 电机当前速度获取函数
         float GetCurrentSpeed();
 
-        /// @brief 编码器中断处理函数
-        static void EncoderISR();
-        /// @brief 速度更新函数
+        /// @brief 编码器脉冲更新函数
+        static void EncoderPluse();
+        /// @brief 
+        static MotorAT8236* GetInstance();
+        /// @brief 利用PID更新速度函数
         void UpdateSpeed(float dt);
 };
+
+
 
