@@ -30,9 +30,9 @@ class MotorAT8236{
         /// @brief 电机初始化函数
         void Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, 
                   GPIO_Regs *encoderB_port, uint32_t encoderB_pin,
-                  uint16_t encoderLines = 1, uint16_t gearRatio = 1,
-                  BspTIMPWM_TypeDef *PWMA_inst, GPTIMER_Regs *PWMA_htim, uint32_t PWMA_channel,
-                  BspTIMPWM_TypeDef *PWMB_inst, GPTIMER_Regs *PWMB_htim, uint32_t PWMB_channel,
+                  uint16_t encoder_lines, uint16_t gear_ratio,
+                  GPTIMER_Regs *PWMA_htim, uint32_t PWMA_channel,
+                  GPTIMER_Regs *PWMB_htim, uint32_t PWMB_channel,
                   float max_speed);
                   
         /// @brief 电机使能函数
@@ -52,6 +52,5 @@ class MotorAT8236{
         static void EncoderISR();
         /// @brief 速度更新函数
         void UpdateSpeed(float dt);
-        
 };
 
