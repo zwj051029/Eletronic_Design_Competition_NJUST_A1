@@ -2,9 +2,11 @@
 #include "FreeRTOS.h"
 #include "MainFrame.hpp"
 #include "System.hpp"
+#include "bsp_delay.h"
 #include "bsp_dwt.h"
 #include "std_cpp.h"
 #include "task.h"
+#include "ultrasonic.hpp"
 
 /******      主初始化函数      ******/
 /**
@@ -57,6 +59,7 @@ void ApplicationCpp() {
     while (1) {
         // 更新所有应用
         System._Update_Applications();
+
         /***     最大循环频率：200Hz     ***/
         vTaskDelayUntil(&appTick, pdMS_TO_TICKS(5));
     }

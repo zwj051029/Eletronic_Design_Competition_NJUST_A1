@@ -36,6 +36,11 @@ void BspGpio_SetState(BspGpio_Instance *inst, uint32_t state);
  */
 void BspGpio_ToggleState(BspGpio_Instance *inst);
 
+/**
+ * @brief 获取GPIO引脚状态
+ */
+uint32_t BspGpio_GetState(BspGpio_Instance *inst);
+
 #ifdef __cplusplus
 }
 #endif

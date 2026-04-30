@@ -33,7 +33,7 @@ uint32_t BspGpio_GetState(BspGpio_Instance *inst) {
     if (inst == NULL) {
         return BSPGPIO_LOW_STATE;
     }
-    return (DL_GPIO_readPins(inst->port, inst->pin) != 0) ? BSPGPIO_HIGH_STATE : BSPGPIO_LOW_STATE;
+    return ((DL_GPIO_readPins(inst->port, inst->pin) != 0) ? BSPGPIO_HIGH_STATE : BSPGPIO_LOW_STATE);
 }
 
 /**

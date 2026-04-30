@@ -1,3 +1,5 @@
 {
-    "CCS.debug.breakpoint.showCore": true
+    "CCS.debug.breakpoint.showCore": true,
+    "CCS.debug.watch.showType": true,
+    "CCS.debug.refreshInterval": 100
 }

@@ -9,12 +9,16 @@
 /**
  * Import the modules used in this configuration.
  */
-const Board  = scripting.addModule("/ti/driverlib/Board");
-const GPIO   = scripting.addModule("/ti/driverlib/GPIO", {}, false);
-const GPIO1  = GPIO.addInstance();
-const SYSCTL = scripting.addModule("/ti/driverlib/SYSCTL");
-const TIMER  = scripting.addModule("/ti/driverlib/TIMER", {}, false);
-const TIMER1 = TIMER.addInstance();
+const Board    = scripting.addModule("/ti/driverlib/Board");
+const CAPTURE  = scripting.addModule("/ti/driverlib/CAPTURE", {}, false);
+const CAPTURE1 = CAPTURE.addInstance();
+const GPIO     = scripting.addModule("/ti/driverlib/GPIO", {}, false);
+const GPIO1    = GPIO.addInstance();
+const PWM      = scripting.addModule("/ti/driverlib/PWM", {}, false);
+const PWM1     = PWM.addInstance();
+const SYSCTL   = scripting.addModule("/ti/driverlib/SYSCTL");
+const TIMER    = scripting.addModule("/ti/driverlib/TIMER", {}, false);
+const TIMER1   = TIMER.addInstance();
 
 /**
  * Write custom configuration values to the imported modules.
@@ -41,9 +45,33 @@ const mux8       = system.clockTree["HSCLKMUX"];
 mux8.inputSelect = "HSCLKMUX_SYSPLL2X";
 
 
+CAPTURE1.$name                              = "CAPTURE_ULTRASONIC";
+CAPTURE1.timerClkPrescale                   = 80;
+CAPTURE1.timerPeriod                        = "50 ms";
+CAPTURE1.captMode                           = "PULSE_WIDTH_UP";
+CAPTURE1.peripheral.ccp0Pin.$assign         = "PA7";
+CAPTURE1.ccp0PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric1";
+CAPTURE1.ccp0PinConfig.hideOutputInversion  = scripting.forceWrite(false);
+CAPTURE1.ccp0PinConfig.onlyInternalResistor = scripting.forceWrite(false);
+CAPTURE1.ccp0PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+
 GPIO1.$name                         = "LED";
 GPIO1.associatedPins[0].$name       = "LED_PIN";
 GPIO1.associatedPins[0].pin.$assign = "PA14";
+
+PWM1.$name                              = "PWM_ULTRASONIC";
+PWM1.clockPrescale                      = 250;
+PWM1.timerCount                         = 64000;
+PWM1.timerStartTimer                    = true;
+PWM1.ccIndex                            = [0];
+PWM1.PWM_CHANNEL_0.$name                = "ti_driverlib_pwm_PWMTimerCC0";
+PWM1.PWM_CHANNEL_0.dutyCycle            = 50;
+PWM1.ccp0PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric0";
+PWM1.ccp0PinConfig.direction            = scripting.forceWrite("OUTPUT");
+PWM1.ccp0PinConfig.hideOutputInversion  = scripting.forceWrite(false);
+PWM1.ccp0PinConfig.onlyInternalResistor = scripting.forceWrite(false);
+PWM1.ccp0PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+PWM1.peripheral.ccp0Pin.$assign         = "PA8";
 
 SYSCTL.clockTreeEn = true;
 
@@ -61,4 +89,6 @@ TIMER1.interrupts      = ["ZERO"];
 Board.peripheral.$suggestSolution          = "DEBUGSS";
 Board.peripheral.swclkPin.$suggestSolution = "PA20";
 Board.peripheral.swdioPin.$suggestSolution = "PA19";
-TIMER1.peripheral.$suggestSolution         = "TIMA0";
+CAPTURE1.peripheral.$suggestSolution       = "TIMG8";
+PWM1.peripheral.$suggestSolution           = "TIMA0";
+TIMER1.peripheral.$suggestSolution         = "TIMA1";
