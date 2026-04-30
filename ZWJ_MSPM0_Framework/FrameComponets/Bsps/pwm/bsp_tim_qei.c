@@ -41,7 +41,7 @@ int32_t BspTimerQEI_GetCount(BspTIMQEI_TypeDef *qei)
 
 /**
  * @brief 清零QEI计数值
- * @param qei       QEI实例
+ * @param qei  QEI实例
  */
 void BspTimerQEI_Reset(BspTIMQEI_TypeDef *qei)
 {

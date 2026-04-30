@@ -50,10 +50,10 @@ CAPTURE1.timerClkPrescale                   = 80;
 CAPTURE1.timerPeriod                        = "50 ms";
 CAPTURE1.captMode                           = "PULSE_WIDTH_UP";
 CAPTURE1.peripheral.ccp0Pin.$assign         = "PA7";
-CAPTURE1.ccp0PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric1";
 CAPTURE1.ccp0PinConfig.hideOutputInversion  = scripting.forceWrite(false);
 CAPTURE1.ccp0PinConfig.onlyInternalResistor = scripting.forceWrite(false);
 CAPTURE1.ccp0PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+CAPTURE1.ccp0PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric1";
 
 GPIO1.$name                         = "LED";
 GPIO1.associatedPins[0].$name       = "LED_PIN";
@@ -66,11 +66,11 @@ PWM1.timerStartTimer                    = true;
 PWM1.ccIndex                            = [0];
 PWM1.PWM_CHANNEL_0.$name                = "ti_driverlib_pwm_PWMTimerCC0";
 PWM1.PWM_CHANNEL_0.dutyCycle            = 50;
-PWM1.ccp0PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric0";
 PWM1.ccp0PinConfig.direction            = scripting.forceWrite("OUTPUT");
 PWM1.ccp0PinConfig.hideOutputInversion  = scripting.forceWrite(false);
 PWM1.ccp0PinConfig.onlyInternalResistor = scripting.forceWrite(false);
 PWM1.ccp0PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+PWM1.ccp0PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric0";
 PWM1.peripheral.ccp0Pin.$assign         = "PA8";
 
 SYSCTL.clockTreeEn = true;

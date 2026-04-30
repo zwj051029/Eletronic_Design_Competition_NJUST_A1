@@ -7,6 +7,7 @@
 #include "std_cpp.h"
 #include "task.h"
 #include "ultrasonic.hpp"
+#include "motor_at8236.hpp"
 
 /******      主初始化函数      ******/
 /**
@@ -28,6 +29,7 @@ void MainInitCpp() {
 void ControlCpp() {
 
     while (1) {
+        MotorAT8236::ControlAllMotors();
         /***     最大循环频率：1000Hz     ***/
         vTaskDelay(pdMS_TO_TICKS(1));
     }
