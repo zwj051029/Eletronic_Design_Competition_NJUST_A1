@@ -25,8 +25,8 @@ private:
     float speed_calculation_period = 0.01f; // M法计算周期
 
     /// AT8236相关参数
-    BspTIMPWM_t PWMA; // AT8236的PWMA的A相
-    BspTIMPWM_t PWMB; // AT8236的PWMA的B相
+    BspTIMPWM_t PWMA;      // AT8236的PWM的A相
+    BspGpio_Instance PWMB; // AT8236的PWM的B相，实际还是要配置为普通GPIO
 
     // 电机的相关参数
     float current_speed = 0.0f; // 当前实际速度
