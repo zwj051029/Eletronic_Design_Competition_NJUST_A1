@@ -157,6 +157,9 @@ void MotorAT8236::UpdatePWM(float duty) {
  * @brief 电机控制主循环，根据当前模式执行相应的控制策略
  */
 void MotorAT8236::Control() {
+    if (!this->initialized || !this->enabled)
+    return;
+    
     switch (mode) {
     case Speed_Control_Mode:
         SetPIDSpeedLoop();
@@ -171,9 +174,6 @@ void MotorAT8236::Control() {
 }
 
 void MotorAT8236::ControlAllMotors() {
-    if (!this->initialized || !this->enabled)
-        return;
-
     for (uint8_t i = 0; i < motor_at8236_insts_count; i++) {
         MotorAT8236 *motor_at8236 = motor_at8236_insts[i];
         if (motor_at8236 != NULL) {
@@ -186,7 +186,7 @@ void MotorAT8236::ControlAllMotors() {
  * @brief 使用二倍频的中断函数
  * @note 需要使能
  */
-void GROUP0_IRQHandler(void) {
+void GROUP1_IRQHandler(void) {
     for (uint8_t i = 0; i < motor_at8236_insts_count; i++) {
         MotorAT8236 *m = motor_at8236_insts[i];
 

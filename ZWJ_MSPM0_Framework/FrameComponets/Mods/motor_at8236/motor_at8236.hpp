@@ -12,9 +12,9 @@ typedef enum {
 } MotorMode;
 
 class MotorAT8236 {
-    friend void GROUP0_IRQHandler();
+    friend void GROUP1_IRQHandler();
 
-private:
+public:
     /// 编码器相关参数
     BspGpio_Instance encoderA_inst;         // 霍尔编码器的A相
     BspGpio_Instance encoderB_inst;         // 霍尔编码器的B相
@@ -64,7 +64,7 @@ public:
     /// @brief 电机的单个控制
     void Control();
     /// @brief 电机的总体控制
-    void ControlAllMotors();
+    static void ControlAllMotors();
 };
 
 extern MotorAT8236 motor_left;
