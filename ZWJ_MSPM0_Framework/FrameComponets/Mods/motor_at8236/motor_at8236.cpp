@@ -20,8 +20,8 @@ MotorAT8236 motor_right;
  * @param gear_ratio ：编码器的减速比，电机轴转数 / 输出轴转数
  * @param PWMA_htim ：驱动电机的PWMA的定时器Timerx
  * @param PWMA_channel :驱动电机的PWMA的定时器的通道
- * @param PWMB_htim :驱动电机的PWMB的定时器Timerx
- * @param PWMB_channel :驱动电机的PWMA的定时器的通道
+ * @param PWMB_htim :驱动电机的另一个通道的GPIOx
+ * @param PWMB_channel :驱动电机的PWMA的另一个通道的GPIO引脚
  * @param max_speed ：电机的最大速度
  */
 void MotorAT8236::Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, GPIO_Regs *encoderB_port, uint32_t encoderB_pin,
@@ -57,7 +57,7 @@ void MotorAT8236::Enable() {
         return;
 
     BspTIMPWM_Enable(&this->PWMA);
-    BspTIMPWM_Enable(&this->PWMB);
+    BspGpio_SetState(&this->PWMB, BSPGPIO_LOW_STATE); // 默认低电平
 
     this->enabled = true;
 }
@@ -70,7 +70,7 @@ void MotorAT8236::Disable() {
         return;
 
     BspTIMPWM_Disable(&this->PWMA);
-    BspTIMPWM_Disable(&this->PWMB);
+    BspGpio_SetState(&this->PWMB, BSPGPIO_LOW_STATE);
 
     this->enabled = false;
 }
@@ -176,7 +176,7 @@ void MotorAT8236::UpdatePWM(float duty) {
     } else if (duty < 0.0f) {
         // 反转：PWMB 输出高电平
         BspGpio_SetState(&PWMB, BSPGPIO_HIGH_STATE);
-    } 
+    }
 }
 
 /**
@@ -188,8 +188,8 @@ void GROUP0_IRQHandler(void) {
         MotorAT8236 *m = motor_at8236_insts[i];
 
         if (DL_GPIO_getEnabledInterruptStatus(m->encoderA_inst.port, m->encoderA_inst.pin)) {
-            uint8_t A = BspGpio_GetState(m->encoderA_inst) ? 1 : 0;
-            uint8_t B = BspGpio_GetState(m->encoderB_inst) ? 1 : 0;
+            uint8_t A = BspGpio_GetState(&m->encoderA_inst) ? 1 : 0;
+            uint8_t B = BspGpio_GetState(&m->encoderB_inst) ? 1 : 0;
 
             if (A == B)
                 m->pulse_count--;

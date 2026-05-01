@@ -4,6 +4,7 @@
 #include "System.hpp"
 #include "bsp_delay.h"
 #include "bsp_dwt.h"
+#include "motor_at8236.hpp"
 #include "std_cpp.h"
 #include "task.h"
 
@@ -17,7 +18,18 @@
 void MainInitCpp() {
     System.Init();
     MainFrameCpp();
-    
+
+    motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, 1, 1, TIMG8, GPIO_Motor_left_BIN1_PWM_C0_IDX,
+                    GPIOA, DL_GPIO_PIN_22, 330, 1); //编码器两个参数和速度全部置一
+    //motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, 1, 1, TIMG7, GPIO_Motor_right_AIN2_PWM_C1_IDX,
+    //              GPIOA, DL_GPIO_PIN_26, 330, 1); //编码器两个参数和速度全部置一
+
+    motor_left.Enable();
+    //motor_right.Enable();
+
+    motor_left.SetPIDSpeedLoop(160);
+                    
+                    
 }
 
 /******      RTOS任务相关的函数      ******/
@@ -28,7 +40,7 @@ void MainInitCpp() {
 void ControlCpp() {
 
     while (1) {
-        //MotorAT8236::ControlAllMotors();
+        // MotorAT8236::ControlAllMotors();
         /***     最大循环频率：1000Hz     ***/
         vTaskDelay(pdMS_TO_TICKS(1));
     }

@@ -92,7 +92,7 @@ void BspTIMPWM_SetDuty(BspTIMPWM_TypeDef *pwm_inst, float duty)
     // 计算CCR的对应值
     pwm_inst->compare_value = (uint32_t)(pwm_inst->auto_reload_value * duty);
     // 更新定时器的比较寄存器
-    DL_TimerA_setCaptureCompareValue(pwm_inst->htim, pwm_inst->channel, pwm_inst->compare_value);
+    DL_Timer_setCaptureCompareValue(pwm_inst->htim, pwm_inst->channel, pwm_inst->compare_value);
 }
 
 /**
@@ -108,7 +108,7 @@ void BspTIMPWM_Enable(BspTIMPWM_TypeDef *pwm_inst)
     if (!pwm_inst->enabled)
     {
         // 启动PWM输出
-        DL_TimerA_startCounter(pwm_inst->htim);
+        DL_Timer_startCounter(pwm_inst->htim);
         pwm_inst->enabled = 1; // 标记为已启用
     }
 }
@@ -126,7 +126,7 @@ void BspTIMPWM_Disable(BspTIMPWM_TypeDef *pwm_inst)
     if (pwm_inst->enabled)
     {
         // 停止PWM输出
-        DL_TimerA_stopCounter(pwm_inst->htim);
+        DL_Timer_stopCounter(pwm_inst->htim);
         pwm_inst->enabled = 0; // 标记为已禁用
     }
 }

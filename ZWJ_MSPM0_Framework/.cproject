@@ -118,7 +118,7 @@
                         </toolChain>
                     </folderInfo>
                     <sourceEntries>
-                        <entry excluding="FrameComponets/Mods/motor_at8236/motor_at8236.cpp|mspm0g3507.cmd|freertos/ticlang/startup_mspm0g350x_ticlang.c|syscfg_c.rov.xs" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="mspm0g3507.cmd|freertos/ticlang/startup_mspm0g350x_ticlang.c|syscfg_c.rov.xs" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                     </sourceEntries>
                 </configuration>
             </storageModule>

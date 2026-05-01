@@ -46,7 +46,7 @@ public:
     /// @brief 电机初始化函数
     void Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, GPIO_Regs *encoderB_port, uint32_t encoderB_pin,
               uint16_t encoder_lines, uint16_t gear_ratio, GPTIMER_Regs *PWMA_htim, uint32_t PWMA_channel,
-              GPTIMER_Regs *PWMB_htim, uint32_t PWMB_channel, float max_speed, float min_speed);
+              GPIO_Regs *PWMB_port, uint32_t PWMB_pin, float max_speed, float min_speed);
 
     /// @brief 电机使能函数
     void Enable();
@@ -66,5 +66,5 @@ public:
     void ControlAllMotors(float target_speed[]);
 };
 
-extern MotorAT8236 motor_left();
+extern MotorAT8236 motor_left;
 extern MotorAT8236 motor_right;
