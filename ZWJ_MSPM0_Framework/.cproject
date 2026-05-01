@@ -41,6 +41,7 @@
                                     <listOptionValue value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/kernel/freertos/Source/portable/TI_ARM_CLANG/ARM_CM0"/>
                                     <listOptionValue value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/posix/ticlang"/>
                                     <listOptionValue value="${REF_PROJECT_1_LOC}"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Algorithm/filter"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Algorithm/pid"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Algorithm/std_math"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Algorithm/linear_math"/>

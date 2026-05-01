@@ -1,5 +1,6 @@
 #include "ultrasonic.hpp"
 #include "bsp_delay.h"
+#include "filter.hpp"
 #include "task.h"
 
 // #define ULTRASONIC_TIM_INST TIMA1
@@ -142,3 +143,55 @@ void Ultrasonic_Gpio::SendTrigger(void) {
 //         break;
 //     }
 // }
+
+// ===================== Ultrasonic_Capture 硬件捕获 =====================
+void Ultrasonic_Capture::ResetCapture() {
+    DL_Timer_clearInterruptStatus(CAPTURE_ULTRASONIC_INST, CAPTURE_ULTRASONIC_CC_IDX);
+}
+
+void Ultrasonic_Capture::Init() {
+    ResetCapture();
+    initialized = true;
+}
+
+void Ultrasonic_Capture::Enable() {
+    DL_Timer_enableInterrupt(CAPTURE_ULTRASONIC_INST, CAPTURE_ULTRASONIC_CC_IDX);
+    DL_Timer_startCounter(CAPTURE_ULTRASONIC_INST);
+    enabled = true;
+}
+
+void Ultrasonic_Capture::Disable() {
+    DL_Timer_disableInterrupt(CAPTURE_ULTRASONIC_INST, CAPTURE_ULTRASONIC_CC_IDX);
+    DL_Timer_stopCounter(CAPTURE_ULTRASONIC_INST);
+    ResetCapture();
+
+    distance = 0.0f;
+    last_filteredval = 0.0f;
+
+    enabled = false;
+}
+
+float Ultrasonic_Capture::GetDistance() {
+    if (!initialized || !enabled)
+        return -1.0f;
+
+    // 读取硬件捕获的脉冲宽度计数值
+    uint32_t captureCnt = DL_Timer_getCaptureCompareValue(CAPTURE_ULTRASONIC_INST, CAPTURE_ULTRASONIC_CC_IDX);
+
+    // 公式：80MHz不分频 → 计数/80 = 微秒 → ×0.017 = cm
+    float raw_dist = (static_cast<float>(captureCnt) / CYCLE_TO_US) * DIST_COEFF;
+
+    // 有效范围过滤
+    if (raw_dist < MIN_DIST_CM || raw_dist > MAX_DIST_CM) {
+        raw_dist = -1.0f;
+    }
+
+    // 一阶互补滤波
+    distance = Filter::FirstOrderComplementary(raw_dist, last_filteredval, FILTER_ALPHA);
+    last_filteredval = distance;
+
+    // 复位捕获，准备下一次测量
+    ResetCapture();
+
+    return distance;
+}
