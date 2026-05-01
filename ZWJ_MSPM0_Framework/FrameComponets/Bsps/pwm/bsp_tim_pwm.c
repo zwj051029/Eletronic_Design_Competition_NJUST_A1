@@ -50,7 +50,7 @@ static float GetFreq(struct BspTIMPWM_t pwm_inst)
  * @param  htim     定时器句柄
  * @param  channel  PWM通道
  */
-void BspTIMPWM_InstRegist(BspTIMPWM_TypeDef *pwm_inst, GPTIMER_Regs *htim, DL_TIMER_CC_INDEX channel)
+void BspTIMPWM_InstRegist(BspTIMPWM_TypeDef *pwm_inst, GPTIMER_Regs *htim, uint32_t channel)
 {
     // 检验参数有效性
     if (pwm_inst == NULL || htim == NULL)

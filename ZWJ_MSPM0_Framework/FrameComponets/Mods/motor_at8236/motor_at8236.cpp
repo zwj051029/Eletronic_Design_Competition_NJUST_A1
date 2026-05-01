@@ -25,7 +25,7 @@ MotorAT8236 motor_right;
  * @param max_speed ：电机的最大速度
  */
 void MotorAT8236::Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, GPIO_Regs *encoderB_port, uint32_t encoderB_pin,
-                       uint16_t encoder_lines, uint16_t gear_ratio, GPTIMER_Regs *PWMA_htim, DL_TIMER_CC_INDEX  PWMA_channel,
+                       uint16_t encoder_lines, uint16_t gear_ratio, GPTIMER_Regs *PWMA_htim, uint32_t  PWMA_channel,
                        GPIO_Regs *PWMB_port, uint32_t PWMB_pin, float max_speed, float min_speed) {
     // 初始化编码器的GPIO与电机的PWM
     BspGpio_InstRegister(&this->encoderA_inst, encoderA_port, encoderA_pin);

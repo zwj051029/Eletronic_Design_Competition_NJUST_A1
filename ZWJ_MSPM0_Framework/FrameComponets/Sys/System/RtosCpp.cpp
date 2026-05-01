@@ -27,7 +27,7 @@ void MainInitCpp() {
     motor_left.Enable();
     //motor_right.Enable();
 
-    motor_left.SetPIDSpeedLoop(160);
+    motor_left.SetPIDSpeedLoop(100);
                     
                     
 }
