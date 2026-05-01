@@ -159,7 +159,7 @@ void MotorAT8236::UpdatePWM(float duty) {
 void MotorAT8236::Control() {
     switch (mode) {
     case Speed_Control_Mode:
-        SetPIDSpeedLoop(target_speed);
+        SetPIDSpeedLoop();
         break;
     case Pos_Control_Mode:
         break;
@@ -204,14 +204,14 @@ void GROUP0_IRQHandler(void) {
     }
 }
 
-/**
- * @brief 定时器归零中断，设置10ms自动触发来计算两个轮子的速度
- * @note  请填写TIMER_0_INST，即对应的定时器
- */
-void TIMER_0_INST_IRQHandler(void) {
-    motor_left.SpeedCalculation();
-    motor_right.SpeedCalculation();
+// /**
+//  * @brief 定时器归零中断，设置10ms自动触发来计算两个轮子的速度
+//  * @note  请填写TIMER_0_INST，即对应的定时器
+//  */
+// void TIMER_0_INST_IRQHandler(void) {
+//     motor_left.SpeedCalculation();
+//     motor_right.SpeedCalculation();
 
-    // 定时器需要指定
-    DL_Timer_clearInterruptStatus(TIMER_0_INST, DL_TIMER_IIDX_ZERO);
-}
+//     // 定时器需要指定
+//     DL_Timer_clearInterruptStatus(TIMER_0_INST, DL_TIMER_IIDX_ZERO);
+// }

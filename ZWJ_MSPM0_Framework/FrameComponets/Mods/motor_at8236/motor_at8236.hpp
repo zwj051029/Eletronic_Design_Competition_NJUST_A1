@@ -53,7 +53,7 @@ public:
     /// @brief 电机失能函数
     void Disable();
 
-    void SetTargetSpeed(float target_speed)
+    void SetTargetSpeed(float target_speed);
     /// @brief 电机目标速度设置函数
     void SetPIDSpeedLoop();
     /// @brief 计算速度函数
