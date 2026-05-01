@@ -21,15 +21,32 @@ void MainInitCpp() {
 
     motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, 1, 1, TIMG8, GPIO_Motor_left_BIN1_PWM_C0_IDX,
                     GPIOA, DL_GPIO_PIN_22, 330, 1); //编码器两个参数和速度全部置一
-    //motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, 1, 1, TIMG7, GPIO_Motor_right_AIN2_PWM_C1_IDX,
-    //              GPIOA, DL_GPIO_PIN_26, 330, 1); //编码器两个参数和速度全部置一
+    motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, 1, 1, TIMG7, GPIO_Motor_right_AIN2_PWM_C1_IDX,
+                  GPIOA, DL_GPIO_PIN_26, 330, 1); //编码器两个参数和速度全部置一
 
     motor_left.Enable();
-    //motor_right.Enable();
+    motor_right.Enable();
 
-    motor_left.SetPIDSpeedLoop(100);
-                    
-                    
+    motor_left.SetPIDSpeedLoop(50);
+    motor_right.SetPIDSpeedLoop(50);
+    BspDelay_ms(3000);
+
+    motor_left.SetPIDSpeedLoop(150);
+    motor_right.SetPIDSpeedLoop(150);
+    BspDelay_ms(3000);
+
+    motor_left.SetPIDSpeedLoop(-50);
+    motor_right.SetPIDSpeedLoop(-50);
+    BspDelay_ms(3000);
+
+    motor_left.SetPIDSpeedLoop(-150);
+    motor_right.SetPIDSpeedLoop(-150);
+    BspDelay_ms(3000);
+
+    motor_left.Disable();
+    motor_right.Disable();
+    
+                             
 }
 
 /******      RTOS任务相关的函数      ******/
