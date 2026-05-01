@@ -26,8 +26,8 @@ const PWM1     = PWM.addInstance();
 const PWM2     = PWM.addInstance();
 const PWM3     = PWM.addInstance();
 const SYSCTL   = scripting.addModule("/ti/driverlib/SYSCTL");
-const TIMER    = scripting.addModule("/ti/driverlib/TIMER", {}, false);
-const TIMER1   = TIMER.addInstance();
+const UART     = scripting.addModule("/ti/driverlib/UART", {}, false);
+const UART1    = UART.addInstance();
 
 /**
  * Write custom configuration values to the imported modules.
@@ -157,6 +157,34 @@ PWM3.ccp1PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
 SYSCTL.clockTreeEn = true;
 
 TIMER1.$name = "TIMER_0";
+UART1.targetBaudRate                   = 115200;
+UART1.$name                            = "BlueTooth";
+UART1.enabledDMARXTriggers             = "DL_UART_DMA_INTERRUPT_RX";
+UART1.enabledDMATXTriggers             = "DL_UART_DMA_INTERRUPT_TX";
+UART1.enableFIFO                       = true;
+UART1.rxFifoThreshold                  = "DL_UART_RX_FIFO_LEVEL_ONE_ENTRY";
+UART1.enabledInterrupts                = ["DMA_DONE_RX","DMA_DONE_TX"];
+UART1.peripheral.$assign               = "UART1";
+UART1.peripheral.rxPin.$assign         = "PB7";
+UART1.peripheral.txPin.$assign         = "PB6";
+UART1.txPinConfig.direction            = scripting.forceWrite("OUTPUT");
+UART1.txPinConfig.hideOutputInversion  = scripting.forceWrite(false);
+UART1.txPinConfig.onlyInternalResistor = scripting.forceWrite(false);
+UART1.txPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+UART1.txPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric2";
+UART1.rxPinConfig.hideOutputInversion  = scripting.forceWrite(false);
+UART1.rxPinConfig.onlyInternalResistor = scripting.forceWrite(false);
+UART1.rxPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+UART1.rxPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric3";
+UART1.DMA_CHANNEL_RX.srcLength         = "BYTE";
+UART1.DMA_CHANNEL_RX.dstLength         = "BYTE";
+UART1.DMA_CHANNEL_RX.$name             = "BlueTooth_RX_DMA_CH";
+UART1.DMA_CHANNEL_RX.addressMode       = "f2b";
+UART1.DMA_CHANNEL_RX.transferMode      = "FULL_CH_REPEAT_SINGLE";
+UART1.DMA_CHANNEL_TX.addressMode       = "b2f";
+UART1.DMA_CHANNEL_TX.srcLength         = "BYTE";
+UART1.DMA_CHANNEL_TX.dstLength         = "BYTE";
+UART1.DMA_CHANNEL_TX.$name             = "BlueTooth_TX_DMA_CH";
 
 /**
  * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
@@ -169,3 +197,11 @@ Board.peripheral.swdioPin.$suggestSolution   = "PA19";
 GPIO2.associatedPins[0].pin.$suggestSolution = "PB2";
 GPIO2.associatedPins[1].pin.$suggestSolution = "PB3";
 TIMER1.peripheral.$suggestSolution           = "TIMA0";
+Board.peripheral.$suggestSolution                = "DEBUGSS";
+Board.peripheral.swclkPin.$suggestSolution       = "PA20";
+Board.peripheral.swdioPin.$suggestSolution       = "PA19";
+CAPTURE1.peripheral.ccp1Pin.$suggestSolution     = "PA25";
+GPIO2.associatedPins[0].pin.$suggestSolution     = "PB2";
+GPIO2.associatedPins[1].pin.$suggestSolution     = "PB3";
+UART1.DMA_CHANNEL_RX.peripheral.$suggestSolution = "DMA_CH1";
+UART1.DMA_CHANNEL_TX.peripheral.$suggestSolution = "DMA_CH0";

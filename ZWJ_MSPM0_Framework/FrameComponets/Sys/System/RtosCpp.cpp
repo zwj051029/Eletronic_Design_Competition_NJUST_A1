@@ -5,8 +5,12 @@
 #include "bsp_delay.h"
 #include "bsp_dwt.h"
 #include "motor_at8236.hpp"
+#include "bsp_uart.h"
 #include "std_cpp.h"
 #include "task.h"
+#include "bluetooth.hpp"
+
+BlueTooth test_bt;
 
 /******      主初始化函数      ******/
 /**
@@ -47,6 +51,9 @@ void MainInitCpp() {
     motor_right.Disable();
     
                              
+    test_bt.Init(BlueTooth_INST);
+    // //开启UART中断
+    // NVIC_EnableIRQ(BlueTooth_INST_INT_IRQN);
 }
 
 /******      RTOS任务相关的函数      ******/
@@ -58,6 +65,8 @@ void ControlCpp() {
 
     while (1) {
         // MotorAT8236::ControlAllMotors();
+        test_bt.SendMsg((uint8_t *)"hello world", 11);
+        BspDelay_ms(1000);
         /***     最大循环频率：1000Hz     ***/
         vTaskDelay(pdMS_TO_TICKS(1));
     }
