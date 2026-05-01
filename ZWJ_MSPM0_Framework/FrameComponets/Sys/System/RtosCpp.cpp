@@ -4,28 +4,54 @@
 #include "System.hpp"
 #include "bsp_delay.h"
 #include "bsp_dwt.h"
+#include "motor_at8236.hpp"
 #include "bsp_uart.h"
 #include "std_cpp.h"
 #include "task.h"
+#include "ti_msp_dl_config.h"
 #include "bluetooth.hpp"
 
 BlueTooth test_bt;
 
-/******      主初始化函数      ******/
-/**
- * @brief 机器人主初始化函数
- * @note 该函数调用各模块的初始化函数，确保系统各部分正确配置
- * @warning 为什么要搞一个这个，而不是在RTOS启动的线程初始化呢
- * 主要是因为怕线程爆栈，主函数的栈深基本上摸不到底的
- */
 void MainInitCpp() {
     System.Init();
     MainFrameCpp();
+    
+    motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, 13, 30, TIMG8, DL_TIMER_CC_0_INDEX, GPIOA,
+                    DL_GPIO_PIN_22, 330, 1); // 编码器两个参数和速度全部置一
+    motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, 13, 30, TIMG7, DL_TIMER_CC_1_INDEX, GPIOA,
+                     DL_GPIO_PIN_26, 330, 1); // 编码器两个参数和速度全部置一
 
-    test_bt.Init(BlueTooth_INST);
+    motor_left.Enable();
+    motor_right.Enable();
+
+    NVIC_EnableIRQ(GPIOA_INT_IRQn);
+
+    while(1)
+    {
+       //if (DL_GPIO_getEnabledInterruptStatus(motor_left.encoderA_inst.port, motor_left.encoderA_inst.pin)) {
+            uint8_t A = BspGpio_GetState(&motor_left.encoderA_inst) ? 1 : 0;
+            uint8_t B = BspGpio_GetState(&motor_left.encoderB_inst) ? 1 : 0;
+
+            if (A == B)
+                motor_left.pulse_count--;
+            else
+                motor_left.pulse_count++;
+
+            DL_GPIO_clearInterruptStatus(motor_left.encoderA_inst.port, motor_left.encoderA_inst.pin);
+        }
+    //} 
+    }
+        
+
+    // motor_left.Disable();
+    // motor_right.Disable();
+    
+                             
+    // test_bt.Init(BlueTooth_INST);
     // //开启UART中断
     // NVIC_EnableIRQ(BlueTooth_INST_INT_IRQN);
-}
+
 
 /******      RTOS任务相关的函数      ******/
 /**
@@ -35,6 +61,7 @@ void MainInitCpp() {
 void ControlCpp() {
 
     while (1) {
+        MotorAT8236::ControlAllMotors();
         test_bt.SendMsg((uint8_t *)"hello world", 11);
         BspDelay_ms(1000);
         /***     最大循环频率：1000Hz     ***/

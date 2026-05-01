@@ -22,6 +22,11 @@ typedef struct {
 void BspGpio_InstRegister(BspGpio_Instance *inst, GPIO_Regs *port, uint32_t pin);
 
 /**
+ * @brief 获取GPIO引脚状态
+ */
+uint32_t BspGpio_GetState(BspGpio_Instance *inst) ;
+
+/**
  * @brief 设置GPIO引脚状态
  */
 void BspGpio_SetState(BspGpio_Instance *inst, uint32_t state);
