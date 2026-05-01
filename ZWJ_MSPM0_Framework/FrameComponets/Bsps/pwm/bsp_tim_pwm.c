@@ -13,7 +13,7 @@ static float GetFreq(struct BspTIMPWM_t pwm_inst)
         return 0.0f; // 定时器句柄无效
 
     // 获取时钟主频
-    uint32_t timer_clock_freq =CPUCLK_FREQ ;
+    uint32_t timer_clock_freq =20000000 ;
     
     // 获取主频时钟的ARR值
     uint32_t arr = DL_Timer_getLoadValue(pwm_inst.htim);
@@ -50,7 +50,7 @@ static float GetFreq(struct BspTIMPWM_t pwm_inst)
  * @param  htim     定时器句柄
  * @param  channel  PWM通道
  */
-void BspTIMPWM_InstRegist(BspTIMPWM_TypeDef *pwm_inst, GPTIMER_Regs *htim, uint32_t channel)
+void BspTIMPWM_InstRegist(BspTIMPWM_TypeDef *pwm_inst, GPTIMER_Regs *htim, DL_TIMER_CC_INDEX channel)
 {
     // 检验参数有效性
     if (pwm_inst == NULL || htim == NULL)
@@ -91,8 +91,9 @@ void BspTIMPWM_SetDuty(BspTIMPWM_TypeDef *pwm_inst, float duty)
 
     // 计算CCR的对应值
     pwm_inst->compare_value = (uint32_t)(pwm_inst->auto_reload_value * duty);
+
     // 更新定时器的比较寄存器
-    DL_Timer_setCaptureCompareValue(pwm_inst->htim, pwm_inst->channel, pwm_inst->compare_value);
+    DL_Timer_setCaptureCompareValue(pwm_inst->htim, pwm_inst->compare_value, pwm_inst->channel);
 }
 
 /**

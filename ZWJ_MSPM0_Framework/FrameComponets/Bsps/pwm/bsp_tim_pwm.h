@@ -14,7 +14,7 @@ extern "C"
     typedef struct BspTIMPWM_t
     {
         GPTIMER_Regs *htim;      // PWM定时器句柄
-        uint32_t channel;        // PWM通道
+        DL_TIMER_CC_INDEX channel;        // PWM通道
         float freq;              // PWM频率
         uint8_t enabled;         // PWM使能标志
 
@@ -26,7 +26,7 @@ extern "C"
     } BspTIMPWM_TypeDef;
 
     /// @brief 注册PWM实例
-    void BspTIMPWM_InstRegist(BspTIMPWM_TypeDef *pwm_inst, GPTIMER_Regs *htim, uint32_t channel);
+    void BspTIMPWM_InstRegist(BspTIMPWM_TypeDef *pwm_inst, GPTIMER_Regs *htim, DL_TIMER_CC_INDEX  channel);
 
     /// @brief 设置PWM占空比
     void BspTIMPWM_SetDuty(BspTIMPWM_TypeDef *pwm_inst, float duty);
