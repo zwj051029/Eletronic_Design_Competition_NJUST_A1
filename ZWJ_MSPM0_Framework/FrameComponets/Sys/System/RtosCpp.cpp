@@ -21,28 +21,12 @@ void MainInitCpp() {
     motor_left.Enable();
     motor_right.Enable();
 
-    motor_left.UpdatePWM(0.2);
-   
-    motor_right.UpdatePWM(0.2);
-    BspDelay_ms(3000);
+    motor_left.SetPIDSpeedLoop();
+    motor_right.SetPIDSpeedLoop();
 
-    motor_left.UpdatePWM(0.8);
-    motor_right.UpdatePWM(0.8);
-    BspDelay_ms(3000);
+    motor_left.SetPIDSpeedLoop();
+    motor_right.SetPIDSpeedLoop();
 
-    motor_left.SetPIDSpeedLoop(150);
-    motor_right.SetPIDSpeedLoop(150);
-    BspDelay_ms(3000);
-
-    motor_left.SetPIDSpeedLoop(-50);
-    motor_right.SetPIDSpeedLoop(-50);
-    BspDelay_ms(3000);
-
-    motor_left.SetPIDSpeedLoop(-150);
-    motor_right.SetPIDSpeedLoop(-150);
-
-    motor_left.Disable();
-    motor_right.Disable();
 }
 
 /******      RTOS任务相关的函数      ******/

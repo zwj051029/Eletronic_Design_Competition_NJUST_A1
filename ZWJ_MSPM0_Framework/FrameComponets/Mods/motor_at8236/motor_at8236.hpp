@@ -20,8 +20,8 @@ private:
     BspGpio_Instance encoderB_inst;         // 霍尔编码器的B相
     int64_t pulse_count = 0;                // 带符号累计脉冲数，正转加，反转减
     int64_t last_pulse_count = 0;           // 上一次速度更新时的脉冲计数
-    uint16_t encoder_lines = 1;             // 编码器线数，单相每圈脉冲数
-    uint16_t gear_ratio = 1;                // 减速比，电机轴转数 / 输出轴转数
+    uint16_t encoder_lines = 13;             // 编码器线数，单相每圈脉冲数
+    uint16_t gear_ratio = 30;                // 减速比，电机轴转数 / 输出轴转数
     float speed_calculation_period = 0.01f; // M法计算周期
 
     /// AT8236相关参数
@@ -53,17 +53,18 @@ public:
     /// @brief 电机失能函数
     void Disable();
 
+    void SetTargetSpeed(float target_speed)
     /// @brief 电机目标速度设置函数
-    void SetPIDSpeedLoop(float target_speed);
+    void SetPIDSpeedLoop();
     /// @brief 计算速度函数
     void SpeedCalculation();
     /// @brief PWM更新函数
     void UpdatePWM(float duty);
 
     /// @brief 电机的单个控制
-    void Control(float target_speed);
+    void Control();
     /// @brief 电机的总体控制
-    void ControlAllMotors(float target_speed[]);
+    void ControlAllMotors();
 };
 
 extern MotorAT8236 motor_left;

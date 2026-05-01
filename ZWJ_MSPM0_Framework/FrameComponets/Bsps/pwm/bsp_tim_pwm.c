@@ -66,7 +66,7 @@ void BspTIMPWM_InstRegist(BspTIMPWM_TypeDef *pwm_inst, GPTIMER_Regs *htim, uint3
     // 获取ARR寄存器的值
     pwm_inst->auto_reload_value = pwm_inst->htim->COUNTERREGS.LOAD;
     // 获取CCR寄存器的值
-    pwm_inst->compare_value = 200 - 1;
+    pwm_inst->compare_value = pwm_inst->auto_reload_value - 1;
     // 给函数指针赋值
     pwm_inst->GetFreq = GetFreq;
     // 计算PWM频率

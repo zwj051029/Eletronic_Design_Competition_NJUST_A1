@@ -25,7 +25,7 @@ MotorAT8236 motor_right;
  * @param max_speed ：电机的最大速度
  */
 void MotorAT8236::Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, GPIO_Regs *encoderB_port, uint32_t encoderB_pin,
-                       uint16_t encoder_lines, uint16_t gear_ratio, GPTIMER_Regs *PWMA_htim, uint32_t  PWMA_channel,
+                       uint16_t encoder_lines, uint16_t gear_ratio, GPTIMER_Regs *PWMA_htim, uint32_t PWMA_channel,
                        GPIO_Regs *PWMB_port, uint32_t PWMB_pin, float max_speed, float min_speed) {
     // 初始化编码器的GPIO与电机的PWM
     BspGpio_InstRegister(&this->encoderA_inst, encoderA_port, encoderA_pin);
@@ -75,33 +75,9 @@ void MotorAT8236::Disable() {
     this->enabled = false;
 }
 
-void MotorAT8236::ControlAllMotors(float target_speed[]) {
-    if (!this->initialized || !this->enabled)
-        return;
-
-    for (uint8_t i = 0; i < motor_at8236_insts_count; i++) {
-        MotorAT8236 *motor_at8236 = motor_at8236_insts[i];
-        if (motor_at8236 != NULL) {
-            motor_at8236->Control(target_speed[i]);
-        }
-    }
-}
-
-/**
- * @brief 电机控制主循环，根据当前模式执行相应的控制策略
- */
-void MotorAT8236::Control(float target_speed) {
-    switch (mode) {
-    case Speed_Control_Mode:
-        SetPIDSpeedLoop(target_speed);
-        break;
-    case Pos_Control_Mode:
-        break;
-    case No_Control_Mode:
-        break;
-    default:
-        break;
-    }
+void MotorAT8236::SetTargetSpeed(float target_speed)
+{
+    this->target_speed = target_speed;
 }
 
 /**
@@ -137,11 +113,9 @@ PWM	1	反转	反向 PWM 驱动，采用慢衰减模式
 /**
  * @brief 设置目标速度，并执行一次增量式 PID 控制（非阻塞）
  */
-void MotorAT8236::SetPIDSpeedLoop(float target_speed) {
+void MotorAT8236::SetPIDSpeedLoop() {
     if (!this->initialized || !this->enabled)
         return;
-
-    this->target_speed = target_speed;
 
     // 增量式 PID 计算：Calc 内部会根据当前配置调用 CalcIncAuto
     // 返回的是经过内部累加和限幅后的绝对控制量（占空比范围 -1.0 ~ 1.0）
@@ -165,7 +139,7 @@ void MotorAT8236::UpdatePWM(float duty) {
     if (absDuty > 1.0f)
         absDuty = 1.0f;
 
-    //PWMA 始终输出 PWM 信号（绝对值占空比）
+    // PWMA 始终输出 PWM 信号（绝对值占空比）
     BspTIMPWM_SetDuty(&PWMA, absDuty);
     BspTIMPWM_SetDuty(&PWMA, duty);
 
@@ -176,6 +150,35 @@ void MotorAT8236::UpdatePWM(float duty) {
     } else if (duty < 0.0f) {
         // 反转：PWMB 输出高电平
         BspGpio_SetState(&PWMB, BSPGPIO_HIGH_STATE);
+    }
+}
+
+/**
+ * @brief 电机控制主循环，根据当前模式执行相应的控制策略
+ */
+void MotorAT8236::Control() {
+    switch (mode) {
+    case Speed_Control_Mode:
+        SetPIDSpeedLoop(target_speed);
+        break;
+    case Pos_Control_Mode:
+        break;
+    case No_Control_Mode:
+        break;
+    default:
+        break;
+    }
+}
+
+void MotorAT8236::ControlAllMotors() {
+    if (!this->initialized || !this->enabled)
+        return;
+
+    for (uint8_t i = 0; i < motor_at8236_insts_count; i++) {
+        MotorAT8236 *motor_at8236 = motor_at8236_insts[i];
+        if (motor_at8236 != NULL) {
+            motor_at8236->Control();
+        }
     }
 }
 
