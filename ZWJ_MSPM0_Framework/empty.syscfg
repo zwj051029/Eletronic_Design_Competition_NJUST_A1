@@ -15,21 +15,11 @@ const CAPTURE1 = CAPTURE.addInstance();
 const GPIO     = scripting.addModule("/ti/driverlib/GPIO", {}, false);
 const GPIO1    = GPIO.addInstance();
 const GPIO2    = GPIO.addInstance();
-const GPIO3    = GPIO.addInstance();
-const GPIO4    = GPIO.addInstance();
 const PWM      = scripting.addModule("/ti/driverlib/PWM", {}, false);
 const PWM1     = PWM.addInstance();
-const PWM2     = PWM.addInstance();
-const PWM3     = PWM.addInstance();
 const SYSCTL   = scripting.addModule("/ti/driverlib/SYSCTL");
-<<<<<<< HEAD
-const TIMER    = scripting.addModule("/ti/driverlib/TIMER", {}, false);
-const TIMER1   = TIMER.addInstance();
-const TIMER2   = TIMER.addInstance();
-=======
 const UART     = scripting.addModule("/ti/driverlib/UART", {}, false);
 const UART1    = UART.addInstance();
->>>>>>> origin/main
 
 /**
  * Write custom configuration values to the imported modules.
@@ -56,14 +46,13 @@ const mux8       = system.clockTree["HSCLKMUX"];
 mux8.inputSelect = "HSCLKMUX_SYSPLL2X";
 
 
-CAPTURE1.$name                      = "CAPTURE_ULTRASONIC";
-CAPTURE1.timerPeriod                = "50 ms";
-CAPTURE1.captMode                   = "PULSE_WIDTH_UP";
-CAPTURE1.ccIndex                    = 1;
-CAPTURE1.timerStartTimer            = true;
-CAPTURE1.peripheral.$assign         = "TIMG12";
-CAPTURE1.peripheral.ccp1Pin.$assign = "PA25";
-CAPTURE1.ccp1PinConfig.$name        = "ti_driverlib_gpio_GPIOPinGeneric0";
+CAPTURE1.$name               = "CAPTURE_ULTRASONIC";
+CAPTURE1.timerPeriod         = "50 ms";
+CAPTURE1.captMode            = "PULSE_WIDTH_UP";
+CAPTURE1.ccIndex             = 1;
+CAPTURE1.timerStartTimer     = true;
+CAPTURE1.peripheral.$assign  = "TIMG12";
+CAPTURE1.ccp1PinConfig.$name = "ti_driverlib_gpio_GPIOPinGeneric0";
 
 GPIO1.$name                         = "LED";
 GPIO1.associatedPins[0].$name       = "LED_PIN";
@@ -80,33 +69,6 @@ GPIO2.associatedPins[1].initialValue = "SET";
 GPIO2.associatedPins[1].assignedPort = "PORTB";
 GPIO2.associatedPins[1].assignedPin  = "3";
 
-GPIO3.$name                          = "Motor";
-GPIO3.associatedPins.create(2);
-GPIO3.associatedPins[0].assignedPort = "PORTA";
-GPIO3.associatedPins[0].$name        = "Left_BIN1";
-GPIO3.associatedPins[1].$name        = "Right_AIN2";
-GPIO3.associatedPins[1].pin.$assign  = "PA26";
-
-GPIO4.port                          = "PORTA";
-GPIO4.$name                         = "Encoder";
-GPIO4.associatedPins.create(4);
-GPIO4.associatedPins[0].direction   = "INPUT";
-GPIO4.associatedPins[0].$name       = "Left_A";
-GPIO4.associatedPins[0].interruptEn = true;
-GPIO4.associatedPins[0].polarity    = "RISE";
-GPIO4.associatedPins[0].pin.$assign = "PA15";
-GPIO4.associatedPins[1].direction   = "INPUT";
-GPIO4.associatedPins[1].$name       = "Left_B";
-GPIO4.associatedPins[1].pin.$assign = "PA16";
-GPIO4.associatedPins[2].$name       = "Right_A";
-GPIO4.associatedPins[2].direction   = "INPUT";
-GPIO4.associatedPins[2].interruptEn = true;
-GPIO4.associatedPins[2].polarity    = "RISE";
-GPIO4.associatedPins[2].pin.$assign = "PA12";
-GPIO4.associatedPins[3].$name       = "Right_B";
-GPIO4.associatedPins[3].direction   = "INPUT";
-GPIO4.associatedPins[3].pin.$assign = "PA13";
-
 PWM1.$name                              = "PWM_ULTRASONIC";
 PWM1.clockPrescale                      = 250;
 PWM1.timerCount                         = 64000;
@@ -117,44 +79,13 @@ PWM1.ccp1PinConfig.hideOutputInversion  = scripting.forceWrite(false);
 PWM1.ccp1PinConfig.onlyInternalResistor = scripting.forceWrite(false);
 PWM1.ccp1PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
 PWM1.ccp1PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric1";
-PWM1.peripheral.$assignAllowConflicts   = "TIMG8";
+PWM1.peripheral.$assign                 = "TIMG8";
 PWM1.peripheral.ccp1Pin.$assign         = "PA2";
 PWM1.PWM_CHANNEL_1.$name                = "ti_driverlib_pwm_PWMTimerCC0";
 PWM1.PWM_CHANNEL_1.dutyCycle            = 50;
 
-PWM2.ccIndex                            = [0];
-PWM2.$name                              = "Motor_left_BIN1_PWM";
-PWM2.timerStartTimer                    = true;
-PWM2.clockPrescale                      = 200;
-PWM2.timerCount                         = 200;
-PWM2.PWM_CHANNEL_0.$name                = "ti_driverlib_pwm_PWMTimerCC1";
-PWM2.PWM_CHANNEL_0.dutyCycle            = 100;
-PWM2.ccp0PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric4";
-PWM2.ccp0PinConfig.direction            = scripting.forceWrite("OUTPUT");
-PWM2.ccp0PinConfig.hideOutputInversion  = scripting.forceWrite(false);
-PWM2.ccp0PinConfig.onlyInternalResistor = scripting.forceWrite(false);
-PWM2.ccp0PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
-PWM2.peripheral.$assignAllowConflicts   = "TIMG8";
-PWM2.peripheral.ccp0Pin.$assign         = "PA23";
-
-PWM3.ccIndex                            = [1];
-PWM3.$name                              = "Motor_right_AIN2_PWM";
-PWM3.timerStartTimer                    = true;
-PWM3.clockPrescale                      = 250;
-PWM3.timerCount                         = 64000;
-PWM3.peripheral.$assign                 = "TIMG7";
-PWM3.peripheral.ccp1Pin.$assign         = "PA27";
-PWM3.PWM_CHANNEL_1.$name                = "ti_driverlib_pwm_PWMTimerCC2";
-PWM3.PWM_CHANNEL_1.ccValue              = 32000;
-PWM3.ccp1PinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric3";
-PWM3.ccp1PinConfig.direction            = scripting.forceWrite("OUTPUT");
-PWM3.ccp1PinConfig.hideOutputInversion  = scripting.forceWrite(false);
-PWM3.ccp1PinConfig.onlyInternalResistor = scripting.forceWrite(false);
-PWM3.ccp1PinConfig.passedPeripheralType = scripting.forceWrite("Digital");
-
 SYSCTL.clockTreeEn = true;
 
-TIMER1.$name = "TIMER_0";
 UART1.targetBaudRate                   = 115200;
 UART1.$name                            = "BlueTooth";
 UART1.enabledDMARXTriggers             = "DL_UART_DMA_INTERRUPT_RX";
@@ -184,24 +115,11 @@ UART1.DMA_CHANNEL_TX.srcLength         = "BYTE";
 UART1.DMA_CHANNEL_TX.dstLength         = "BYTE";
 UART1.DMA_CHANNEL_TX.$name             = "BlueTooth_TX_DMA_CH";
 
-TIMER2.$name              = "TIMER_Capture";
-TIMER2.timerPeriod        = "10ms";
-TIMER2.timerClkPrescale   = 250;
-TIMER2.interrupts         = ["ZERO"];
-TIMER2.peripheral.$assign = "TIMG6";
-
 /**
  * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-Board.peripheral.$suggestSolution            = "DEBUGSS";
-Board.peripheral.swclkPin.$suggestSolution   = "PA20";
-Board.peripheral.swdioPin.$suggestSolution   = "PA19";
-GPIO2.associatedPins[0].pin.$suggestSolution = "PB2";
-GPIO2.associatedPins[1].pin.$suggestSolution = "PB3";
-GPIO3.associatedPins[0].pin.$suggestSolution = "PA0";
-TIMER1.peripheral.$suggestSolution           = "TIMA0";
 Board.peripheral.$suggestSolution                = "DEBUGSS";
 Board.peripheral.swclkPin.$suggestSolution       = "PA20";
 Board.peripheral.swdioPin.$suggestSolution       = "PA19";
