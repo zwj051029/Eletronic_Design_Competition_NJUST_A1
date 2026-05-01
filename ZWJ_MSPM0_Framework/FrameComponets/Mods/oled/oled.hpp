@@ -3,7 +3,6 @@
 #include "bsp_iic.hpp"
 #include "oled_font.hpp"
 #include <string>
-
 using namespace std;
 
 class OLED {

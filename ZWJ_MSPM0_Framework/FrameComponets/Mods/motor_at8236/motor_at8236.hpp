@@ -37,7 +37,7 @@ private:
     bool initialized = false; // 电机是否初始化
     bool enabled = false;     // 电机是否使能
 
-    MotorMode mode = No_Control_Mode; // 电机模式
+    MotorMode mode = Speed_Control_Mode; // 电机模式
 
     // PID相关
     PidGeneral pid_speed; // 速度环PID

@@ -141,7 +141,6 @@ void MotorAT8236::SetPIDSpeedLoop(float target_speed) {
     if (!this->initialized || !this->enabled)
         return;
 
-    this->mode = Speed_Control_Mode;
     this->target_speed = target_speed;
 
     // 增量式 PID 计算：Calc 内部会根据当前配置调用 CalcIncAuto
@@ -166,8 +165,9 @@ void MotorAT8236::UpdatePWM(float duty) {
     if (absDuty > 1.0f)
         absDuty = 1.0f;
 
-    // PWMA 始终输出 PWM 信号（绝对值占空比）
+    //PWMA 始终输出 PWM 信号（绝对值占空比）
     BspTIMPWM_SetDuty(&PWMA, absDuty);
+    BspTIMPWM_SetDuty(&PWMA, duty);
 
     // PWMB 作为方向信号（GPIO）
     if (duty > 0.0f) {

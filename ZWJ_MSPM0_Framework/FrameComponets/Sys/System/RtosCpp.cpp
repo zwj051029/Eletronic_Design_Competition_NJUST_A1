@@ -7,28 +7,27 @@
 #include "motor_at8236.hpp"
 #include "std_cpp.h"
 #include "task.h"
+#include "ti_msp_dl_config.h"
 
-/******      主初始化函数      ******/
-/**
- * @brief 机器人主初始化函数
- * @note 该函数调用各模块的初始化函数，确保系统各部分正确配置
- * @warning 为什么要搞一个这个，而不是在RTOS启动的线程初始化呢
- * 主要是因为怕线程爆栈，主函数的栈深基本上摸不到底的
- */
 void MainInitCpp() {
     System.Init();
     MainFrameCpp();
-
-    motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, 1, 1, TIMG8, GPIO_Motor_left_BIN1_PWM_C0_IDX,
-                    GPIOA, DL_GPIO_PIN_22, 330, 1); //编码器两个参数和速度全部置一
-    motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, 1, 1, TIMG7, GPIO_Motor_right_AIN2_PWM_C1_IDX,
-                  GPIOA, DL_GPIO_PIN_26, 330, 1); //编码器两个参数和速度全部置一
+    
+    motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, 1, 1, TIMG8, GPIO_Motor_left_BIN1_PWM_C0_IDX, GPIOA,
+                    DL_GPIO_PIN_22, 330, 1); // 编码器两个参数和速度全部置一
+    motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, 1, 1, TIMG7, GPIO_Motor_right_AIN2_PWM_C1_IDX, GPIOA,
+                     DL_GPIO_PIN_26, 330, 1); // 编码器两个参数和速度全部置一
 
     motor_left.Enable();
     motor_right.Enable();
 
-    motor_left.SetPIDSpeedLoop(50);
-    motor_right.SetPIDSpeedLoop(50);
+    motor_left.UpdatePWM(0.2);
+   
+    motor_right.UpdatePWM(0.2);
+    BspDelay_ms(3000);
+
+    motor_left.UpdatePWM(0.8);
+    motor_right.UpdatePWM(0.8);
     BspDelay_ms(3000);
 
     motor_left.SetPIDSpeedLoop(150);
@@ -41,12 +40,9 @@ void MainInitCpp() {
 
     motor_left.SetPIDSpeedLoop(-150);
     motor_right.SetPIDSpeedLoop(-150);
-    BspDelay_ms(3000);
 
     motor_left.Disable();
     motor_right.Disable();
-    
-                             
 }
 
 /******      RTOS任务相关的函数      ******/

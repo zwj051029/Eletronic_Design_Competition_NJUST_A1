@@ -1,6 +1,9 @@
 #include "bsp_tim_pwm.h"
 #include "ti_msp_dl_config.h"
 
+
+
+
 /**
  * @brief  获取PWM频率
  * @param  pwm_inst PWM实例
@@ -13,10 +16,10 @@ static float GetFreq(struct BspTIMPWM_t pwm_inst)
         return 0.0f; // 定时器句柄无效
 
     // 获取时钟主频
-    uint32_t timer_clock_freq =20000000 ;
+    uint32_t timer_clock_freq = CPUCLK_FREQ / 2;
     
     // 获取主频时钟的ARR值
-    uint32_t arr = DL_Timer_getLoadValue(pwm_inst.htim);
+    uint32_t arr = pwm_inst.htim->COUNTERREGS.LOAD;
     
     // 获取时钟配置，结果存入结构体clockConfig（包含分频系数与PRC）
     DL_Timer_ClockConfig clockConfig;
@@ -61,9 +64,9 @@ void BspTIMPWM_InstRegist(BspTIMPWM_TypeDef *pwm_inst, GPTIMER_Regs *htim, uint3
     pwm_inst->channel = channel; // PWM通道
 
     // 获取ARR寄存器的值
-    pwm_inst->auto_reload_value = DL_Timer_getLoadValue(pwm_inst->htim);
+    pwm_inst->auto_reload_value = pwm_inst->htim->COUNTERREGS.LOAD;
     // 获取CCR寄存器的值
-    pwm_inst->compare_value = DL_Timer_getCaptureCompareValue(pwm_inst->htim, pwm_inst->channel);
+    pwm_inst->compare_value = 200 - 1;
     // 给函数指针赋值
     pwm_inst->GetFreq = GetFreq;
     // 计算PWM频率
@@ -90,7 +93,8 @@ void BspTIMPWM_SetDuty(BspTIMPWM_TypeDef *pwm_inst, float duty)
     pwm_inst->duty = duty;
 
     // 计算CCR的对应值
-    pwm_inst->compare_value = (uint32_t)(pwm_inst->auto_reload_value * duty);
+    pwm_inst->compare_value = (uint32_t)(pwm_inst->auto_reload_value * (1.0f - duty));
+    
 
     // 更新定时器的比较寄存器
     DL_Timer_setCaptureCompareValue(pwm_inst->htim, pwm_inst->compare_value, pwm_inst->channel);
