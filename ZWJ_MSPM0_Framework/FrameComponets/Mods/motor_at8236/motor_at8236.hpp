@@ -54,16 +54,16 @@ public:
     void Disable();
 
     /// @brief 电机目标速度设置函数
-    void SetSpeed(float target_speed);
+    void SetPIDSpeedLoop(float target_speed);
     /// @brief 计算速度函数
     void SpeedCalculation();
     /// @brief PWM更新函数
     void UpdatePWM(float duty);
 
     /// @brief 电机的单个控制
-    void Control();
+    void Control(float target_speed);
     /// @brief 电机的总体控制
-    void ControlAllMotors();
+    void ControlAllMotors(float target_speed[]);
 };
 
 extern MotorAT8236 motor_left;
