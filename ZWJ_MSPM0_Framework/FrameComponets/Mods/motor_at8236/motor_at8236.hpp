@@ -66,5 +66,5 @@ public:
     void ControlAllMotors(float target_speed[]);
 };
 
-extern MotorAT8236 motor_left;
+extern MotorAT8236 motor_left();
 extern MotorAT8236 motor_right;

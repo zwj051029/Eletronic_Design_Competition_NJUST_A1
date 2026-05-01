@@ -17,6 +17,7 @@
 void MainInitCpp() {
     System.Init();
     MainFrameCpp();
+    
 }
 
 /******      RTOS任务相关的函数      ******/
