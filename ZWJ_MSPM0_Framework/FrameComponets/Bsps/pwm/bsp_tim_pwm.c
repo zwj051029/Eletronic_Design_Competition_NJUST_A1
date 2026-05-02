@@ -135,3 +135,29 @@ void BspTIMPWM_Disable(BspTIMPWM_TypeDef *pwm_inst)
         pwm_inst->enabled = 0; // 标记为已禁用
     }
 }
+
+// void GROUP1_IRQHandler(void) {
+//     while (1) {
+//         DL_GPIO_writePins(LED_PORT, LED_LED_PIN_PIN);
+//         delay_cycles(80000000);
+//         DL_GPIO_clearPins(LED_PORT, LED_LED_PIN_PIN);
+//         delay_cycles(80000000);
+//     }
+    
+    
+//     // for (uint8_t i = 0; i < motor_at8236_insts_count; i++) {
+//     //     MotorAT8236 *m = motor_at8236_insts[i];
+
+//     //     if (DL_GPIO_getEnabledInterruptStatus(m->encoderA_inst.port, m->encoderA_inst.pin)) {
+//     //         uint8_t A = BspGpio_GetState(&m->encoderA_inst) ? 1 : 0;
+//     //         uint8_t B = BspGpio_GetState(&m->encoderB_inst) ? 1 : 0;
+
+//     //         if (A == B)
+//     //             m->pulse_count--;
+//     //         else
+//     //             m->pulse_count++;
+
+//     //         DL_GPIO_clearInterruptStatus(m->encoderA_inst.port, m->encoderA_inst.pin);
+//     //     }
+//     // }
+// }

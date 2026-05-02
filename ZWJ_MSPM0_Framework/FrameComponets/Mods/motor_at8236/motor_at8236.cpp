@@ -4,8 +4,8 @@
 #define MotorAT8236_MAX_CANINSTS 2
 
 // 限制注册实例变量
-static MotorAT8236 *motor_at8236_insts[MotorAT8236_MAX_CANINSTS] = {NULL};
-static uint8_t motor_at8236_insts_count = 0;
+MotorAT8236 *motor_at8236_insts[MotorAT8236_MAX_CANINSTS] = {NULL};
+uint8_t motor_at8236_insts_count = 0;
 
 MotorAT8236 motor_left;
 MotorAT8236 motor_right;
@@ -75,8 +75,7 @@ void MotorAT8236::Disable() {
     this->enabled = false;
 }
 
-void MotorAT8236::SetTargetSpeed(float target_speed)
-{
+void MotorAT8236::SetTargetSpeed(float target_speed) {
     this->target_speed = target_speed;
 }
 
@@ -141,7 +140,6 @@ void MotorAT8236::UpdatePWM(float duty) {
 
     // PWMA 始终输出 PWM 信号（绝对值占空比）
     BspTIMPWM_SetDuty(&PWMA, absDuty);
-    BspTIMPWM_SetDuty(&PWMA, duty);
 
     // PWMB 作为方向信号（GPIO）
     if (duty > 0.0f) {
@@ -158,8 +156,8 @@ void MotorAT8236::UpdatePWM(float duty) {
  */
 void MotorAT8236::Control() {
     if (!this->initialized || !this->enabled)
-    return;
-    
+        return;
+
     switch (mode) {
     case Speed_Control_Mode:
         SetPIDSpeedLoop();
@@ -186,23 +184,34 @@ void MotorAT8236::ControlAllMotors() {
  * @brief 使用二倍频的中断函数
  * @note 需要使能
  */
-void GROUP1_IRQHandler(void) {
-    for (uint8_t i = 0; i < motor_at8236_insts_count; i++) {
-        MotorAT8236 *m = motor_at8236_insts[i];
 
-        if (DL_GPIO_getEnabledInterruptStatus(m->encoderA_inst.port, m->encoderA_inst.pin)) {
-            uint8_t A = BspGpio_GetState(&m->encoderA_inst) ? 1 : 0;
-            uint8_t B = BspGpio_GetState(&m->encoderB_inst) ? 1 : 0;
 
-            if (A == B)
-                m->pulse_count--;
-            else
-                m->pulse_count++;
+// void GROUP1_IRQHandler(void) {
+//     while (1) {
+//         DL_GPIO_writePins(LED_PORT, LED_LED_PIN_PIN);
+//         delay_cycles(80000000);
+//         DL_GPIO_clearPins(LED_PORT, LED_LED_PIN_PIN);
+//         delay_cycles(80000000);
+//     }
+    
+    
+//     // for (uint8_t i = 0; i < motor_at8236_insts_count; i++) {
+//     //     MotorAT8236 *m = motor_at8236_insts[i];
 
-            DL_GPIO_clearInterruptStatus(m->encoderA_inst.port, m->encoderA_inst.pin);
-        }
-    }
-}
+//     //     if (DL_GPIO_getEnabledInterruptStatus(m->encoderA_inst.port, m->encoderA_inst.pin)) {
+//     //         uint8_t A = BspGpio_GetState(&m->encoderA_inst) ? 1 : 0;
+//     //         uint8_t B = BspGpio_GetState(&m->encoderB_inst) ? 1 : 0;
+
+//     //         if (A == B)
+//     //             m->pulse_count--;
+//     //         else
+//     //             m->pulse_count++;
+
+//     //         DL_GPIO_clearInterruptStatus(m->encoderA_inst.port, m->encoderA_inst.pin);
+//     //     }
+//     // }
+// }
+
 
 // /**
 //  * @brief 定时器归零中断，设置10ms自动触发来计算两个轮子的速度

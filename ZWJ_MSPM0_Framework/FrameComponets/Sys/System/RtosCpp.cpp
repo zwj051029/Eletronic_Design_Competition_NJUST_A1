@@ -9,49 +9,12 @@
 #include "std_cpp.h"
 #include "task.h"
 #include "ti_msp_dl_config.h"
-#include "bluetooth.hpp"
-
-BlueTooth test_bt;
 
 void MainInitCpp() {
     System.Init();
     MainFrameCpp();
-    
-    motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, 13, 30, TIMG8, DL_TIMER_CC_0_INDEX, GPIOA,
-                    DL_GPIO_PIN_22, 330, 1); // 编码器两个参数和速度全部置一
-    motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, 13, 30, TIMG7, DL_TIMER_CC_1_INDEX, GPIOA,
-                     DL_GPIO_PIN_26, 330, 1); // 编码器两个参数和速度全部置一
-
-    motor_left.Enable();
-    motor_right.Enable();
-
     NVIC_EnableIRQ(GPIOA_INT_IRQn);
-
-    while(1)
-    {
-       //if (DL_GPIO_getEnabledInterruptStatus(motor_left.encoderA_inst.port, motor_left.encoderA_inst.pin)) {
-            uint8_t A = BspGpio_GetState(&motor_left.encoderA_inst) ? 1 : 0;
-            uint8_t B = BspGpio_GetState(&motor_left.encoderB_inst) ? 1 : 0;
-
-            if (A == B)
-                motor_left.pulse_count--;
-            else
-                motor_left.pulse_count++;
-
-            DL_GPIO_clearInterruptStatus(motor_left.encoderA_inst.port, motor_left.encoderA_inst.pin);
-        }
-    //} 
-    }
-        
-
-    // motor_left.Disable();
-    // motor_right.Disable();
-    
-                             
-    // test_bt.Init(BlueTooth_INST);
-    // //开启UART中断
-    // NVIC_EnableIRQ(BlueTooth_INST_INT_IRQN);
-
+}
 
 /******      RTOS任务相关的函数      ******/
 /**
@@ -61,9 +24,6 @@ void MainInitCpp() {
 void ControlCpp() {
 
     while (1) {
-        MotorAT8236::ControlAllMotors();
-        test_bt.SendMsg((uint8_t *)"hello world", 11);
-        BspDelay_ms(1000);
         /***     最大循环频率：1000Hz     ***/
         vTaskDelay(pdMS_TO_TICKS(1));
     }
