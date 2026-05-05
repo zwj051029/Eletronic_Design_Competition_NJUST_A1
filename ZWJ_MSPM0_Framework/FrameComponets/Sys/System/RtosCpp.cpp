@@ -1,14 +1,16 @@
 #include "RtosCpp.hpp"
 #include "FreeRTOS.h"
 #include "MainFrame.hpp"
+#include "SpeedMixer.hpp"
 #include "System.hpp"
 #include "bsp_delay.h"
 #include "bsp_dwt.h"
 #include "bsp_uart.h"
+#include "motor_at8236.hpp"
 #include "std_cpp.h"
 #include "task.h"
-#include "motor_at8236.hpp"
-#include "SpeedMixer.hpp"
+#include "vofa.hpp"
+
 
 float right_motor_speed = 0.0f;
 float left_motor_speed = 0.0f;
@@ -26,14 +28,16 @@ void MainInitCpp() {
 
     NVIC_EnableIRQ(GPIOA_INT_IRQn);
     NVIC_EnableIRQ(TIMG6_INT_IRQn);
-    
-    //先左后右
+
+    // 先左后右
     motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, TIMG8, DL_TIMER_CC_1_INDEX, GPIOA, DL_GPIO_PIN_23);
     motor_left.Enable();
 
     motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, TIMG7, DL_TIMER_CC_0_INDEX, GPIOA, DL_GPIO_PIN_27);
     motor_right.Enable();
-    motor_right.SetPIDCoeffienct(2.0f, 5.0f, 0.000025f);
+
+    motor_left.SetPIDCoeffienct(0.0008f, 0.01f, 0.000001f);
+    motor_right.SetPIDCoeffienct(0.009f, 0.02f, 0.0000012f);
 }
 
 /******      RTOS任务相关的函数      ******/
@@ -46,10 +50,10 @@ void ControlCpp() {
     while (1) {
         right_motor_speed = speed_mixer.GetFinalRightSpeed();
         left_motor_speed = speed_mixer.GetFinalLeftSpeed();
-        
+
         motor_right.SetSpeed(right_motor_speed);
         motor_left.SetSpeed(left_motor_speed);
-        
+
         Motor::ControlAllMotors();
         /***     最大循环频率：1000Hz     ***/
         vTaskDelay(pdMS_TO_TICKS(1));

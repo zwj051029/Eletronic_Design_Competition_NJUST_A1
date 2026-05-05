@@ -38,9 +38,9 @@ void Motor::SetSpeed(float target_speed) {
 
 void Motor::SpeedLoop() {
     float duty;
+    //duty = target_speed / max_speed;
 
     if (target_speed > 0.0f) {
-        duty = target_speed / max_speed;
         duty = pid_speed.Calc(target_speed, current_speed, 0.85f);
         BspTIMPWM_SetDuty(&this->PWM, duty);
         BspGpio_SetState(&this->direction_control, BSPGPIO_HIGH_STATE);
@@ -101,10 +101,11 @@ void Motor::ControlAllMotors() {
     for (uint8_t i = 0; i < motor_insts_count; i++) {
         Motor *motor = motor_insts[i];
         if (motor != NULL) {
-            if(motor == motor_insts[1])
             motor->Control();
-        else 
-            motor->SpeedNoLoop();
+        //     if(motor == motor_insts[1])
+        //     motor->Control();
+        // else 
+        //     motor->SpeedNoLoop();
         }
     }
 }
@@ -135,15 +136,17 @@ extern "C" void EncoderISR() {
 
     // 左电机 (PA15)
     if (status & motor_left.encoderA_inst.pin) {
+        DL_GPIO_writePins(LED_PORT, LED_LED_PIN_PIN);
         if (DL_GPIO_readPins(GPIOA, motor_left.encoderA_inst.pin)) // PA16
-            motor_left.pulse_count--;
-        else
             motor_left.pulse_count++;
+        else
+            motor_left.pulse_count--;
         DL_GPIO_clearInterruptStatus(GPIOA, motor_left.encoderA_inst.pin);
     }
 
     // 右电机 (PA12)
     if (status & motor_right.encoderA_inst.pin) {
+        //DL_GPIO_clearPins(LED_PORT, LED_LED_PIN_PIN);
         if (DL_GPIO_readPins(GPIOA, motor_right.encoderB_inst.pin)) // PA13
             motor_right.pulse_count--;
         else

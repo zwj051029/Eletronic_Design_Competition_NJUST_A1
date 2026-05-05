@@ -16,7 +16,7 @@ class Track : public Application {
 public:
     float track_error = 0.0f;
     float speed_diff = 0.0f;
-    float base_speed = 120.0f; // 电机基础速度
+    float base_speed = 80.0f; // 电机基础速度
 
     bool is_dashed_line = false; // 是否处于虚线
     bool is_finish_line = false; // 终点/起点线（中间四黑）
@@ -33,10 +33,10 @@ private:
     Pids track_pid;
 
     // 灰度权重（左负右正，中间靠近0）
-    const float weights[8] = {-3.0f, -2.0f, -1.0f, -0.3f, 0.3f, 1.0f, 2.0f, 3.0f}; // 先用着，后面再调
+    const float weights[8] = {-1.2f, -0.9f, -0.6f, -0.3f, 0.3f, 0.6f, 0.9f, 1.2f}; // 先用着，后面再调
     bool gray_state[8];                                                            // true=黑线(1), false=白线(0)
 
-    float max_speed_diff = 150.0f;
+    float max_speed_diff = 10.0f;
     // 巡线灵敏度   数值太大：容易丢线；数值太小：容易误判、抖动
     float line_threshold = 0.3f; // 有效线宽阈值（权重和低于此值视为丢线）
 
