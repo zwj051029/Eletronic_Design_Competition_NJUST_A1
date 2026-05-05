@@ -18,8 +18,9 @@ void EncoderISR();
 class Motor {
     friend void SpeedUpdateISR();
     friend void EncoderISR();
+    friend class Navigation;
 
-public:
+private:
     // pwm
     BspTIMPWM_TypeDef PWM;
     BspGpio_Instance direction_control;
@@ -37,6 +38,7 @@ public:
     uint16_t encoder_lines = 13;            // 编码器线数，单相每圈脉冲数
     uint16_t gear_ratio = 30;               // 减速比，电机轴转数 / 输出轴转数
     float speed_calculation_period = 0.01f; // M法计算周期
+    int64_t delta;                          // 脉冲·增量
 
     // Motor_Instance motor_inst;
 
@@ -70,15 +72,16 @@ public:
 extern Motor motor_left;
 extern Motor motor_right;
 
-// NVIC_EnableIRQ(GPIOA_INT_IRQn);
-//     NVIC_EnableIRQ(TIMG6_INT_IRQn);
-    
-//     //先左后右
-//     motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, TIMG8, DL_TIMER_CC_1_INDEX, GPIOA, DL_GPIO_PIN_23);
-//     motor_left.Enable();
-//     motor_left.SetSpeed(80);
 
-//     motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, TIMG7, DL_TIMER_CC_0_INDEX, GPIOA, DL_GPIO_PIN_27);
-//     motor_right.Enable();
-//     motor_right.SetSpeed(60);
-//     motor_right.SetPIDCoeffienct(2.0f, 5.0f, 0.000025f);
+    // NVIC_EnableIRQ(GPIOA_INT_IRQn);
+    // NVIC_EnableIRQ(TIMG6_INT_IRQn);
+
+    // // 先左后右
+    // motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, TIMG8, DL_TIMER_CC_1_INDEX, GPIOA, DL_GPIO_PIN_23);
+    // motor_left.Enable();
+
+    // motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, TIMG7, DL_TIMER_CC_0_INDEX, GPIOA, DL_GPIO_PIN_27);
+    // motor_right.Enable();
+
+    // motor_left.SetPIDCoeffienct(0.0008f, 0.01f, 0.000001f);
+    // motor_right.SetPIDCoeffienct(0.009f, 0.02f, 0.0000012f);

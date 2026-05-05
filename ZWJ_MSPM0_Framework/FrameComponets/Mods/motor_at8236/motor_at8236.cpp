@@ -118,7 +118,7 @@ void Motor::ControlAllMotors() {
  */
 void Motor::SpeedCalculation() {
     // 1. 计算脉冲增量
-    int64_t delta = pulse_count - last_pulse_count;
+    this->delta = pulse_count - last_pulse_count;
 
     // 2. 脉冲增量 → 输出轴转数（1倍频 + 减速比）
     float rev = (float) delta / (encoder_lines * 1.0f * gear_ratio);

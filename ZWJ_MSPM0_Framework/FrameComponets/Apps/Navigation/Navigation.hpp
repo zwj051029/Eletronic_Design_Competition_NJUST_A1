@@ -8,6 +8,8 @@
 #include "mpu6050.hpp"
 #include "pid.hpp"
 #include "std_math.hpp"
+#include "bsp_delay.h"
+#include "motor_at8236.hpp"
 
 class Navigation : public Application {
     friend class RobotSystem;
@@ -27,7 +29,7 @@ private:
 
     BlueTooth bluetooth;
 
-    const uint32_t BASE_SPEED = 100.0f; // 默认速度
+    const uint32_t BASE_SPEED = 60.0f; // 默认速度
 
     Pids yaw_pid;
 
@@ -55,7 +57,6 @@ public:
     void SetEnable(bool enable);
     
     void Sensor_calibration();
-    void Heading_correction();
     void odometry_update();
     void Navigation_Control();
 
