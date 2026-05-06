@@ -36,8 +36,8 @@ void MainInitCpp() {
     motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, TIMG7, DL_TIMER_CC_0_INDEX, GPIOA, DL_GPIO_PIN_27);
     motor_right.Enable();
 
-    motor_left.SetPIDCoeffienct(0.0008f, 0.01f, 0.000001f);
-    motor_right.SetPIDCoeffienct(0.009f, 0.02f, 0.0000012f);
+    motor_left.SetSpeedPIDCoeffienct(0.0008f, 0.01f, 0.000001f);
+    motor_right.SetSpeedPIDCoeffienct(0.009f, 0.02f, 0.0000012f);
 }
 
 /******      RTOS任务相关的函数      ******/

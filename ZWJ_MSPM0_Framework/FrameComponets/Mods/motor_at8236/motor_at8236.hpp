@@ -5,7 +5,6 @@
 #include "pid.hpp"
 #include "ti_msp_dl_config.h"
 
-
 typedef enum {
     Speed_Control_Mode,
     Pos_Control_Mode,
@@ -27,6 +26,9 @@ private:
     float max_speed = 330;
     float target_speed;
     float current_speed = 0;
+    float target_position;
+    float current_position = 0;
+    float total_pulse_count = 0;
 
     MotorMode mode = Speed_Control_Mode;
 
@@ -40,10 +42,15 @@ private:
     float speed_calculation_period = 0.01f; // M法计算周期
     int64_t delta;                          // 脉冲·增量
 
+    // 电机相关参数
+    float wheel_base = 156.5 ; //轮距，单位为mm
+    
+
     // Motor_Instance motor_inst;
 
     // PID相关
-    Pids pid_speed; // 速度环PID
+    Pids pid_speed;    // 速度环PID
+    Pids pid_position; // 位置环PID
 
 public:
     void Init(GPIO_Regs *encoderA_port, uint32_t encoderA_pin, GPIO_Regs *encoderB_port, uint32_t encoderB_pin,
@@ -52,7 +59,9 @@ public:
 
     void SetSpeed(float target_speed);
     void SpeedLoop();
-    void SpeedNoLoop();
+
+    void SetPosition(float target_postion);
+    void PositionLoop();
 
     void Enable();
     void Disable();
@@ -65,23 +74,23 @@ public:
     /// @brief 计算速度函数
     void SpeedCalculation();
 
-    void SetPIDCoeffienct(float kp, float ki, float kd);
+    void SetSpeedPIDCoeffienct(float kp, float ki, float kd);
+    void SetPositionPIDCoeffienct(float kp, float ki, float kd);
 };
 
-//请先注册
+// 请先注册
 extern Motor motor_left;
 extern Motor motor_right;
 
+// NVIC_EnableIRQ(GPIOA_INT_IRQn);
+// NVIC_EnableIRQ(TIMG6_INT_IRQn);
 
-    // NVIC_EnableIRQ(GPIOA_INT_IRQn);
-    // NVIC_EnableIRQ(TIMG6_INT_IRQn);
+// // 先左后右
+// motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, TIMG8, DL_TIMER_CC_1_INDEX, GPIOA, DL_GPIO_PIN_23);
+// motor_left.Enable();
 
-    // // 先左后右
-    // motor_left.Init(GPIOA, DL_GPIO_PIN_15, GPIOA, DL_GPIO_PIN_16, TIMG8, DL_TIMER_CC_1_INDEX, GPIOA, DL_GPIO_PIN_23);
-    // motor_left.Enable();
+// motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, TIMG7, DL_TIMER_CC_0_INDEX, GPIOA, DL_GPIO_PIN_27);
+// motor_right.Enable();
 
-    // motor_right.Init(GPIOA, DL_GPIO_PIN_12, GPIOA, DL_GPIO_PIN_13, TIMG7, DL_TIMER_CC_0_INDEX, GPIOA, DL_GPIO_PIN_27);
-    // motor_right.Enable();
-
-    // motor_left.SetPIDCoeffienct(0.0008f, 0.01f, 0.000001f);
-    // motor_right.SetPIDCoeffienct(0.009f, 0.02f, 0.0000012f);
+// motor_left.SetPIDCoeffienct(0.0008f, 0.01f, 0.000001f);
+// motor_right.SetPIDCoeffienct(0.009f, 0.02f, 0.0000012f);
