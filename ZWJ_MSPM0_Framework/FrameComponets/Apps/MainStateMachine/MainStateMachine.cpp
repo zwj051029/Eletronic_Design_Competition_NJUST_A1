@@ -246,6 +246,8 @@ void MainStateMachine::ActionTurnAround(StateCore *core) {
  * @note 只启用 Navigation
  */
 void MainStateMachine::ActionNavigation(StateCore *core) {
+    cond_return_start = false;
+
     // 1. 启用/禁用对应 App
     track_app.SetEnable(false);
     follow_app.SetEnable(false);

@@ -61,6 +61,9 @@ void ControlCpp() {
         motor_right.SetSpeed(right_motor_speed);
         motor_left.SetSpeed(left_motor_speed);
 
+        // motor_right.SetSpeed(-20.0f);
+        // motor_left.SetSpeed(0.0f);
+
         Motor::ControlAllMotors();
         /***     最大循环频率：1000Hz     ***/
         vTaskDelay(pdMS_TO_TICKS(1));

@@ -24,7 +24,7 @@ void Navigation::SetEnable(bool enable) {
 }
 
 void Navigation::Navigation_Control() {
-    this->left_speed_cmd = BASE_SPEED + 17.0f;
+    this->left_speed_cmd = BASE_SPEED + 25.0f;
     this->right_speed_cmd = BASE_SPEED;
 
     speed_mixer.SetNavigationSpeed(left_speed_cmd, right_speed_cmd);
@@ -35,7 +35,6 @@ void Navigation::ExecuteStep() {
     case STEP_IDLE:
         if (this->bluetooth.rx_buf[0] == 0xFF) {
             this->bluetooth.rx_buf[0] = 0;
-            is_vaild = true;
             current_step = STEP_Recievex;
         }
         break;
@@ -45,6 +44,8 @@ void Navigation::ExecuteStep() {
             target_pos.x = ((uint8_t) (this->bluetooth.rx_buf[0])) * 100;
             this->bluetooth.rx_buf[0] = 0;
             current_step = STEP_Recievey;
+            is_vaild = true;
+
         }
 
         break;
@@ -54,6 +55,7 @@ void Navigation::ExecuteStep() {
         if (this->bluetooth.rx_buf[0] != 0) {
             target_pos.y = ((uint8_t) (this->bluetooth.rx_buf[0])) * 100;
             this->bluetooth.rx_buf[0] = 0;
+
             float dx = target_pos.x - current_pos.x;
             float dy = target_pos.y - current_pos.y;
             
@@ -72,10 +74,16 @@ void Navigation::ExecuteStep() {
 
         if (target_pos.x != 0 && target_pos.y != 0) {
             // 判断是否已对准（阈值可调整）
-            this->left_speed_cmd = 40.0f; //可调参数
+            this->left_speed_cmd = 36.5f; //可调参数
             this->right_speed_cmd = 0.0f;
             speed_mixer.SetNavigationSpeed(left_speed_cmd, right_speed_cmd);
-            BspDelay_ms(target_angle * 30); //可调参数
+            BspDelay_ms(target_angle * 32.5); //可调参数
+
+            //             // 判断是否已对准（阈值可调整）
+            // this->left_speed_cmd = 0.0f; //可调参数
+            // this->right_speed_cmd = -20.0f;
+            // speed_mixer.SetNavigationSpeed(left_speed_cmd, right_speed_cmd);
+            // BspDelay_ms(target_angle * 38.36); //可调参数
 
             speed_mixer.SetNavigationSpeed(0.0, 0.0);
             current_step = STEP_StartNavi;
@@ -85,7 +93,7 @@ void Navigation::ExecuteStep() {
     }
 
     case STEP_StartNavi: {
-        this->left_speed_cmd = BASE_SPEED + 15.0f; //可调参数
+        this->left_speed_cmd = BASE_SPEED +6.0f ; //可调参数
         this->right_speed_cmd = BASE_SPEED;
         speed_mixer.SetNavigationSpeed(left_speed_cmd, right_speed_cmd);
         if (is_no_enter) {
@@ -94,7 +102,6 @@ void Navigation::ExecuteStep() {
         }
 
         if (BspDwt_GetTimeline_Sec() - first_enter_time > time) {
-            DL_GPIO_writePins(LED_PORT, LED_LED_PIN_PIN);
             current_step = STEP_FinishNavi;
         }
 
