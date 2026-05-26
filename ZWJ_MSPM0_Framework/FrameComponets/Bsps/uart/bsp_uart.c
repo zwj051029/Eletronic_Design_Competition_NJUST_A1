@@ -85,23 +85,3 @@ void BspUart_Transmit(BspUart_Instance inst, uint8_t *tx_data, uint16_t tx_len) 
         break;
     }
 }
-
-void UART1_IRQHandler(void) {
-    for (uint8_t i = 0; i < bspuart_insts_count; i++) {
-        BspUart_Instance *inst = bspuart_insts[i];
-        if (inst->uart_regs == UART1) {
-
-            if (inst->rx_callback != NULL) {
-                inst->rx_callback(inst->uart_regs, inst->rx_buf, inst->rx_setlen);
-            }
-            memset(inst->rx_buf, 0, sizeof(inst->rx_buf));
-            inst->rx_len = 0;
-            // 重新使能接收
-            DL_DMA_setSrcAddr(inst->dma_regs, inst->rx_dma_channel_id, inst->src_addr);
-            DL_DMA_setDestAddr(inst->dma_regs, inst->rx_dma_channel_id, inst->dest_addr);
-            // DL_DMA_setTransferSize(inst->dma_regs, inst->rx_dma_channel_id, inst->rx_setlen);
-            DL_DMA_setTransferSize(inst->dma_regs, inst->rx_dma_channel_id, 1);
-            DL_DMA_enableChannel(inst->dma_regs, inst->rx_dma_channel_id);
-        }
-    }
-}

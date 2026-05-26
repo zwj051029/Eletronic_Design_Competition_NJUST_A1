@@ -30,6 +30,4 @@
  * @warning 严禁阻塞
  */
 void MainFrameCpp() {
-    MainStateMachine::Init();
-    MainStateMachine::Start();
 }

@@ -58,6 +58,7 @@
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Sys/Positioner"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Sys/Chassis"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/std_sensor"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/M0_Comm"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/oled"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/mpu6050"/>
                                     <listOptionValue value="${PROJECT_ROOT}/FrameComponets/Mods/motor_at8236"/>

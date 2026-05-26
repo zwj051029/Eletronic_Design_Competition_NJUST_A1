@@ -222,13 +222,13 @@ TIMER1.interrupts         = ["ZERO"];
 TIMER1.timerStartTimer    = true;
 TIMER1.peripheral.$assign = "TIMG6";
 
-UART1.targetBaudRate                   = 115200;
-UART1.$name                            = "BlueTooth";
-UART1.enabledDMARXTriggers             = "DL_UART_DMA_INTERRUPT_RX";
-UART1.enableFIFO                       = true;
 UART1.rxFifoThreshold                  = "DL_UART_RX_FIFO_LEVEL_ONE_ENTRY";
-UART1.enabledInterrupts                = ["DMA_DONE_RX"];
-UART1.enabledDMATXTriggers             = "DL_UART_DMA_INTERRUPT_TX";
+UART1.targetBaudRate                   = 115200;
+UART1.$name                            = "UART_1";
+UART1.enableDMARX                      = false;
+UART1.enableDMATX                      = false;
+UART1.enabledInterrupts                = ["RX"];
+UART1.interruptPriority                = "0";
 UART1.peripheral.$assign               = "UART1";
 UART1.peripheral.rxPin.$assign         = "PB7";
 UART1.peripheral.txPin.$assign         = "PB6";
@@ -241,23 +241,15 @@ UART1.rxPinConfig.hideOutputInversion  = scripting.forceWrite(false);
 UART1.rxPinConfig.onlyInternalResistor = scripting.forceWrite(false);
 UART1.rxPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
 UART1.rxPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric3";
-UART1.DMA_CHANNEL_RX.srcLength         = "BYTE";
-UART1.DMA_CHANNEL_RX.dstLength         = "BYTE";
-UART1.DMA_CHANNEL_RX.$name             = "BlueTooth_RX_DMA_CH";
-UART1.DMA_CHANNEL_RX.addressMode       = "f2b";
-UART1.DMA_CHANNEL_RX.enableInterrupt   = true;
-UART1.DMA_CHANNEL_TX.$name             = "BlueTooth_TX_DMA_CH";
 
 /**
  * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-Board.peripheral.$suggestSolution                = "DEBUGSS";
-Board.peripheral.swclkPin.$suggestSolution       = "PA20";
-Board.peripheral.swdioPin.$suggestSolution       = "PA19";
-CAPTURE1.peripheral.ccp1Pin.$suggestSolution     = "PA25";
-GPIO2.associatedPins[0].pin.$suggestSolution     = "PB2";
-GPIO2.associatedPins[1].pin.$suggestSolution     = "PB3";
-UART1.DMA_CHANNEL_RX.peripheral.$suggestSolution = "DMA_CH1";
-UART1.DMA_CHANNEL_TX.peripheral.$suggestSolution = "DMA_CH0";
+Board.peripheral.$suggestSolution            = "DEBUGSS";
+Board.peripheral.swclkPin.$suggestSolution   = "PA20";
+Board.peripheral.swdioPin.$suggestSolution   = "PA19";
+CAPTURE1.peripheral.ccp1Pin.$suggestSolution = "PA25";
+GPIO2.associatedPins[0].pin.$suggestSolution = "PB2";
+GPIO2.associatedPins[1].pin.$suggestSolution = "PB3";
